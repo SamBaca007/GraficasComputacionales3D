@@ -2,6 +2,7 @@
 
 #include "Api.h"
 #include <Windows.h>
+#include <cstdint>
 
 extern "C" {
   ENGINE_API int Engine_Initialize(HWND hwnd, int width, int height) noexcept;
