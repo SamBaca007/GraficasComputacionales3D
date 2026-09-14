@@ -222,7 +222,7 @@ bool Engine::Initialize(
 
     result = D3D11CreateDeviceAndSwapChain(
       nullptr,
-      D3D_DRIVER_TYPE_HARDWARE,
+      D3D_DRIVER_TYPE_WARP,
       nullptr,
       0,
       featureLevels,
