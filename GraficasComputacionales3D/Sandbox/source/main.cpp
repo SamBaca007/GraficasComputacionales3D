@@ -147,7 +147,7 @@ wWinMain(HINSTANCE instance, HINSTANCE previousInstance, PWSTR commandLine, int 
       window,
       L"No se pudo inicializar el Engine.\n\n"
       L"Verifica que exista:\n"
-      L"shaders\\Triangle.hlsl\n\n"
+      L"shaders\\Cube.hlsl\n\n"
       L"Revisa también la ventana Output.",
       L"Engine Error",
       MB_OK | MB_ICONERROR
