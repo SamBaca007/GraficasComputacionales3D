@@ -16,6 +16,9 @@
     <Filter Include="Archivos de encabezado\Engine">
       <UniqueIdentifier>{0796ee77-590f-465a-86c7-a7218ce1a7dc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Archivos de encabezado\Core">
+      <UniqueIdentifier>{81764658-c313-4aa3-8fe0-24a6c28026c6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Engine.cpp">
