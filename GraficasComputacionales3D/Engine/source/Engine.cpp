@@ -1,3 +1,8 @@
+/**
+ * @file Engine.cpp
+ * @brief Implementación interna del motor gráfico utilizando DirectX 11 (Patrón Pimpl).
+ */
+
 #include <Engine/Engine.h>
 #include <DirectXMath.h>
 #include <Windows.h>
@@ -9,16 +14,25 @@
 #include <cstdint>
 #include <new>
 
-// MACROS
-#define SAFE_RELEASE(x) if(x != nullptr) x->Release(); x = nullptr;
+ // MACROS
 
+ /**
+  * @brief Macro clásica para liberar y anular una interfaz COM de DirectX.
+  * @param x Puntero a la interfaz COM.
+  */
+#define SAFE_RELEASE(x) if(x != nullptr) x->Release(); x = nullptr;
+  /**
+   * @brief Macro de registro para notificar la creación de recursos en la salida de depuración de Visual Studio.
+   */
 #define MESSAGE( classObj, method, state )   \
-{                                            \
+{                                             \
    std::wostringstream os_;                  \
    os_ << classObj << "::" << method << " : " << "[CREATION OF RESOURCE " << ": " << state << "] \n"; \
    OutputDebugStringW( os_.str().c_str() );  \
 }
-
+   /**
+    * @brief Macro para registrar mensajes de error en la ventana de depuración de Win32.
+    */
 #define ERROR(classObj, method, errorMSG)                     \
 {                                                             \
     try {                                                     \
@@ -30,9 +44,14 @@
         OutputDebugStringW(L"Failed to log error message.\n");\
     }                                                         \
 }
-
+    /**
+     * @brief Helper genérico para liberar de forma segura punteros de interfaz COM de DirectX.
+     *
+     * @tparam T Tipo del objeto COM que implementa IUnknown.
+     * @param object Referencia al puntero del objeto a liberar.
+     */
 template<typename T>
-void SafeRelease(T * &object) noexcept
+void SafeRelease(T*& object) noexcept
 {
   if (object != nullptr)
   {
@@ -40,47 +59,66 @@ void SafeRelease(T * &object) noexcept
     object = nullptr;
   }
 }
-
+/**
+ * @struct Engine::Implementation
+ * @brief Estructura privada de implementación que encapsula todos los recursos e interfaces de Direct3D 11.
+ */
 struct
-Engine::Implementation {
+  Engine::Implementation {
+  /**
+   * @struct Vertex
+   * @brief Representación en memoria de la estructura de un vértice.
+   */
   struct Vertex
   {
-    float position[3];
-    float color[4];
+    float position[3]; /**< Posición 3D (X, Y, Z). */
+    float color[4];    /**< Color RGBA. */
   };
-
+  /**
+   * @struct TransformBuffer
+   * @brief Estructura alineada a 16 bytes para pasar matrices de transformación al CBuffer de la GPU.
+   */
   struct alignas(16) TransformBuffer
   {
-    DirectX::XMFLOAT4X4 worldViewProjection;
+    DirectX::XMFLOAT4X4 worldViewProjection; /**< Matriz combinada WVP. */
   };
 
-  HWND window = nullptr;
+  HWND window = nullptr; /**< Handle de la ventana de renderizado. */
 
-  std::uint32_t width = 0;
-  std::uint32_t height = 0;
+  std::uint32_t width = 0;  /**< Ancho del área cliente. */
+  std::uint32_t height = 0; /**< Alto del área cliente. */
 
-  ID3D11Device* device = nullptr;
-  ID3D11DeviceContext* context = nullptr;
-  IDXGISwapChain* swapChain = nullptr;
-  ID3D11RenderTargetView* renderTarget = nullptr;
-  ID3D11Texture2D* depthStencilBuffer = nullptr;
-  ID3D11DepthStencilView* depthStencilView = nullptr;
+  ID3D11Device* device = nullptr;                     /**< Dispositivo DirectX 11 para crear recursos. */
+  ID3D11DeviceContext* context = nullptr;             /**< Contexto de comandos de dibujado en la GPU. */
+  IDXGISwapChain* swapChain = nullptr;                /**< Cadena de intercambio para el doble búfer. */
+  ID3D11RenderTargetView* renderTarget = nullptr;     /**< Vista del búfer de color principal. */
+  ID3D11Texture2D* depthStencilBuffer = nullptr;      /**< Textura para el búfer de profundidad. */
+  ID3D11DepthStencilView* depthStencilView = nullptr;  /**< Vista del búfer de profundidad y stencil. */
 
-  ID3D11Buffer* vertexBuffer = nullptr;
-  ID3D11Buffer* indexBuffer = nullptr;
-  ID3D11Buffer* transformBuffer = nullptr;
+  ID3D11Buffer* vertexBuffer = nullptr;    /**< Búfer de vértices del cubo en VRAM. */
+  ID3D11Buffer* indexBuffer = nullptr;     /**< Búfer de índices del cubo en VRAM. */
+  ID3D11Buffer* transformBuffer = nullptr; /**< Búfer constante de transformaciones (WVP). */
 
-  ID3D11RasterizerState* rasterizerState = nullptr;
+  ID3D11RasterizerState* rasterizerState = nullptr; /**< Configuración del modo de rasterizado. */
 
-  std::chrono::steady_clock::time_point startTime{};
+  std::chrono::steady_clock::time_point startTime{}; /**< Marca de tiempo inicial para calcular la rotación en animación. */
 
-  ID3D11VertexShader* vertexShader = nullptr;
-  ID3D11PixelShader* pixelShader = nullptr;
-  ID3D11InputLayout* inputLayout = nullptr;
+  ID3D11VertexShader* vertexShader = nullptr; /**< Shader de vértices compilado. */
+  ID3D11PixelShader* pixelShader = nullptr;   /**< Shader de píxeles compilado. */
+  ID3D11InputLayout* inputLayout = nullptr;   /**< Formato de los datos de entrada de los vértices. */
 
+  /**
+   * @brief Compila un archivo HLSL a código de máquina interpretable por la GPU.
+   *
+   * @param filename Ruta al archivo del shader.
+   * @param entryPoint Nombre de la función principal dentro del shader.
+   * @param shaderModel Versión del perfil del shader (ej. "vs_5_0", "ps_5_0").
+   * @param shaderBlob Puntero que recibirá el bloque de código compilado en memoria.
+   * @return true si la compilación fue exitosa, false en caso de error.
+   */
   static bool
     CompileShader(const wchar_t* filename, const char* entryPoint,
-                  const char* shaderModel, ID3DBlob** shaderBlob) noexcept {
+      const char* shaderModel, ID3DBlob** shaderBlob) noexcept {
     if (!filename || !entryPoint || !shaderModel || !shaderBlob) {
       return false;
     }
@@ -130,6 +168,9 @@ Engine::Implementation {
     return true;
   }
 
+  /**
+   * @brief Libera ordenadamente todos los recursos de Direct3D 11 creados en memoria/GPU.
+   */
   void ReleaseResources() noexcept
   {
     if (context)
@@ -161,14 +202,18 @@ Engine::Implementation {
   }
 
 };
-
+/**
+ * @brief Constructor. Instancia la estructura oculta de implementación con no-throw.
+ */
 Engine::Engine() noexcept
   : m_implementation(
     new (std::nothrow) Implementation{}
   )
 {
 }
-
+/**
+ * @brief Destructor. Destruye la implementación e invoca la limpieza general.
+ */
 Engine::~Engine() noexcept
 {
   Shutdown();
@@ -176,7 +221,9 @@ Engine::~Engine() noexcept
   delete m_implementation;
   m_implementation = nullptr;
 }
-
+/**
+ * @brief Prepara el entorno gráfico DirectX 11, crea el Swap Chain, shaders, layout y búferes 3D.
+ */
 bool Engine::Initialize(
   void* nativeWindow,
   std::uint32_t width,
@@ -235,8 +282,7 @@ bool Engine::Initialize(
     &engine.context
   );
 
-  // Si falla la GPU física, utiliza el rasterizador
-  // por software de Windows.
+  // Si falla la GPU física, utiliza el rasterizador por software de Windows (WARP).
   if (FAILED(result))
   {
     SafeRelease(engine.swapChain);
@@ -573,7 +619,13 @@ bool Engine::Initialize(
 
   return true;
 }
-
+/**
+ * @brief Ejecuta el ciclo de renderizado de la GPU para el cuadro actual.
+ *
+ * Limpia el Render Target y el Depth Stencil, calcula las matrices de transformación
+ * 3D animadas según el tiempo transcurrido, actualiza el constant buffer y ejecuta
+ * las llamadas a la pipeline de pintado (DrawIndexed).
+ */
 void Engine::Render() noexcept
 {
   if (!m_implementation)
@@ -664,7 +716,9 @@ void Engine::Render() noexcept
 
   engine.swapChain->Present(1, 0);
 }
-
+/**
+ * @brief Apaga la instancia y delega la destrucción de los recursos de DirectX al método Pimpl.
+ */
 void Engine::Shutdown() noexcept
 {
   if (m_implementation)
