@@ -213,6 +213,7 @@
   <ItemGroup>
     <ClInclude Include="include\Engine\Api.h" />
     <ClInclude Include="include\Engine\Engine.h" />
+    <ClInclude Include="include\Engine\Prerequisites.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Engine.cpp" />

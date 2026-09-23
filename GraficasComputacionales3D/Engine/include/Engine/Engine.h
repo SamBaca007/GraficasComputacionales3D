@@ -1,21 +1,5 @@
 #pragma once
-
-#include "Api.h"
-#include <Windows.h>
-#include <cstdint>
-
-extern "C" {
-  ENGINE_API int Engine_Initialize(HWND hwnd, int width, int height) noexcept;
-
-  ENGINE_API void
-    Engine_Update() noexcept;
-
-  ENGINE_API void
-    Engine_Render() noexcept;
-
-  ENGINE_API void
-    Engine_Shutdown() noexcept;
-}
+#include "Prerequisites.h"
 
 class ENGINE_API
 Engine final {

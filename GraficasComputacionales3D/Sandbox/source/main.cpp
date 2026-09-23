@@ -5,7 +5,8 @@ constexpr wchar_t WINDOW_CLASS_NAME[] =
 L"Surreal Engine 3D";
 
 int WINAPI
-wWinMain(HINSTANCE instance, HINSTANCE previousInstance, PWSTR commandLine, int showCommand) {
+wWinMain(HINSTANCE instance, HINSTANCE previousInstance, PWSTR commandLine,
+  int showCommand) {
 
   UNREFERENCED_PARAMETER(previousInstance);
   UNREFERENCED_PARAMETER(commandLine);

@@ -279,7 +279,8 @@ bool Engine::Initialize(
     return false;
   }
 
-  result = engine.device->CreateRenderTargetView(backBuffer, nullptr, &engine.renderTarget);
+  result = engine.device->
+    CreateRenderTargetView(backBuffer, nullptr, &engine.renderTarget);
 
   SafeRelease(backBuffer);
 
@@ -303,7 +304,8 @@ bool Engine::Initialize(
 
   depthBufferDescription.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 
-  result = engine.device->CreateTexture2D(&depthBufferDescription, nullptr, &engine.depthStencilBuffer);
+  result = engine.device->CreateTexture2D(&depthBufferDescription, nullptr,
+    &engine.depthStencilBuffer);
 
   if (FAILED(result))
   {
@@ -311,7 +313,8 @@ bool Engine::Initialize(
     return false;
   }
 
-  result = engine.device->CreateDepthStencilView(engine.depthStencilBuffer, nullptr, &engine.depthStencilView);
+  result = engine.device->CreateDepthStencilView(engine.depthStencilBuffer,
+    nullptr, &engine.depthStencilView);
 
   if (FAILED(result))
   {
@@ -393,8 +396,12 @@ bool Engine::Initialize(
   }
 
   constexpr D3D11_INPUT_ELEMENT_DESC inputElements[]{
-    {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, static_cast<UINT>(offsetof(Implementation::Vertex, position)), D3D11_INPUT_PER_VERTEX_DATA, 0},
-  {"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, static_cast<UINT>(offsetof(Implementation::Vertex, color)), D3D11_INPUT_PER_VERTEX_DATA, 0}
+    {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,
+    static_cast<UINT>(offsetof(Implementation::Vertex, position)),
+    D3D11_INPUT_PER_VERTEX_DATA, 0},
+  {"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0,
+  static_cast<UINT>(offsetof(Implementation::Vertex, color)),
+  D3D11_INPUT_PER_VERTEX_DATA, 0}
   };
 
   result = engine.device->CreateInputLayout(
@@ -519,7 +526,8 @@ bool Engine::Initialize(
   D3D11_SUBRESOURCE_DATA indexData{};
   indexData.pSysMem = indices;
 
-  result = engine.device->CreateBuffer(&indexBufferDescription, &indexData, &engine.indexBuffer);
+  result = engine.device->CreateBuffer(&indexBufferDescription, &indexData,
+    &engine.indexBuffer);
 
   if (FAILED(result))
   {
@@ -535,7 +543,8 @@ bool Engine::Initialize(
 
   transformBufferDescription.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 
-  result = engine.device->CreateBuffer(&transformBufferDescription, nullptr, &engine.transformBuffer);
+  result = engine.device->CreateBuffer(&transformBufferDescription, nullptr,
+    &engine.transformBuffer);
 
   if (FAILED(result))
   {
@@ -551,7 +560,8 @@ bool Engine::Initialize(
 
   rasterizerDescription.DepthClipEnable = TRUE;
 
-  result = engine.device->CreateRasterizerState(&rasterizerDescription, &engine.rasterizerState);
+  result = engine.device->CreateRasterizerState(&rasterizerDescription,
+    &engine.rasterizerState);
 
   if (FAILED(result))
   {
@@ -596,15 +606,18 @@ void Engine::Render() noexcept
 
   engine.context->ClearRenderTargetView(engine.renderTarget, clearColor);
 
-  engine.context->ClearDepthStencilView(engine.depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+  engine.context->ClearDepthStencilView(engine.depthStencilView,
+    D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
   const auto currentTime = std::chrono::steady_clock::now();
 
-  const float elapsedSeconds = std::chrono::duration<float>(currentTime - engine.startTime).count();
+  const float elapsedSeconds = std::chrono::duration<float>
+    (currentTime - engine.startTime).count();
 
   using namespace DirectX;
 
-  const XMMATRIX world = XMMatrixRotationX(elapsedSeconds * 0.4f) * XMMatrixRotationY(elapsedSeconds * 0.8f);
+  const XMMATRIX world = XMMatrixRotationX(elapsedSeconds * 0.4f) *
+    XMMatrixRotationY(elapsedSeconds * 0.8f);
 
   const XMVECTOR cameraPosition = XMVectorSet(0.0f, 1.5f, -5.0f, 1.0f);
 
@@ -614,13 +627,16 @@ void Engine::Render() noexcept
 
   const XMMATRIX view = XMMatrixLookAtLH(cameraPosition, cameraTarget, cameraUp);
 
-  const float aspectRatio = static_cast<float>(engine.width) / static_cast<float>(engine.height);
+  const float aspectRatio = static_cast<float>(engine.width) /
+    static_cast<float>(engine.height);
 
-  const XMMATRIX projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, aspectRatio, 0.1f, 100.0f);
+  const XMMATRIX projection = XMMatrixPerspectiveFovLH(XM_PIDIV4,
+    aspectRatio, 0.1f, 100.0f);
 
   Implementation::TransformBuffer transform{};
 
-  XMStoreFloat4x4(&transform.worldViewProjection, XMMatrixTranspose(world * view * projection));
+  XMStoreFloat4x4(&transform.worldViewProjection,
+    XMMatrixTranspose(world * view * projection));
 
   engine.context->UpdateSubresource(engine.transformBuffer, 0, nullptr, &transform, 0, 0);
 
