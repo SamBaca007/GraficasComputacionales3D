@@ -1,6 +1,7 @@
 /**
  * @file Cube.hlsl
- * @brief Código HLSL que contiene el Vertex Shader y Pixel Shader básicos para renderizar geometría (como un cubo) con colores por vértice.
+ * @brief Código HLSL que contiene el Vertex Shader y Pixel Shader básicos para renderizar
+ * geometría (como un cubo) con colores por vértice.
  */
 
 /**
@@ -8,17 +9,18 @@
  * 
  * Se actualiza desde la CPU con los datos de transformación para el frame actual.
  */
-cbuffer TransformBuffer : register(b0)
-{
+cbuffer
+TransformBuffer : register(b0) {
     /** @brief Matriz combinada de Mundo, Vista y Proyección (World-View-Projection). */
     float4x4 worldViewProjection;
 };
 /**
  * @struct VSInput
- * @brief Estructura que define los datos de entrada por cada vértice (Vertex Input Layout).
+ * @brief Estructura que define los datos de entrada por cada vértice
+ * (Vertex Input Layout).
  */
-struct VSInput
-{
+struct
+VSInput {
     /** @brief Posición local del vértice en espacio 3D. Semántica: POSITION. */
     float3 position : POSITION;
     
@@ -29,12 +31,14 @@ struct VSInput
  * @struct PSInput
  * @brief Estructura que define la salida del Vertex Shader y la entrada al Pixel Shader.
  */
-struct PSInput
-{
-    /** @brief Posición transformada al espacio de clip/pantalla. Semántica del sistema: SV_POSITION. */
+struct
+PSInput {
+    /** @brief Posición transformada al espacio de clip/pantalla.
+      * Semántica del sistema: SV_POSITION. */
     float4 position : SV_POSITION;
     
-    /** @brief Color interpolado por el rasterizador para el fragmento actual. Semántica: COLOR. */
+    /** @brief Color interpolado por el rasterizador para el fragmento actual.
+      * Semántica: COLOR. */
     float4 color : COLOR;
 };
 /**
@@ -46,8 +50,8 @@ struct PSInput
  * @param input Datos de entrada del vértice actual provenientes del Input Assembler.
  * @return PSInput Datos transformados listos para la etapa de rasterización.
  */
-PSInput VSMain(VSInput input)
-{
+PSInput
+VSMain(VSInput input) {
     PSInput output;
     
     // Multiplica el vector de posición 4D (x, y, z, 1.0) por la matriz WVP.
@@ -66,9 +70,10 @@ PSInput VSMain(VSInput input)
  * Se ejecuta por cada píxel de la geometría rasterizada en pantalla.
  * 
  * @param input Datos del fragmento interpolados por el rasterizador.
- * @return float4 El color final del píxel en formato RGBA que se escribirá en el Render Target. Semántica: SV_TARGET.
+ * @return float4 El color final del píxel en formato RGBA que se escribirá
+ * en el Render Target. Semántica: SV_TARGET.
  */
-float4 PSMain(PSInput input) : SV_TARGET
-{
+float4
+PSMain(PSInput input) : SV_TARGET {
     return input.color;
 }

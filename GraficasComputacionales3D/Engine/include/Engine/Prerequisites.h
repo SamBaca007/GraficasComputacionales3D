@@ -12,7 +12,8 @@
 #include <cstdint>
 #include <Windows.h>
 
-extern "C" {
+extern
+"C" {
   /**
    * @brief Inicializa el motor gráfico y todos sus subsistemas.
    *

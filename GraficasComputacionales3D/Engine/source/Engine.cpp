@@ -51,8 +51,8 @@
      * @param object Referencia al puntero del objeto a liberar.
      */
 template<typename T>
-void SafeRelease(T*& object) noexcept
-{
+void
+SafeRelease(T*& object) noexcept {
   if (object != nullptr)
   {
     object->Release();
@@ -69,8 +69,8 @@ struct
    * @struct Vertex
    * @brief Representación en memoria de la estructura de un vértice.
    */
-  struct Vertex
-  {
+  struct
+  Vertex {
     float position[3]; /**< Posición 3D (X, Y, Z). */
     float color[4];    /**< Color RGBA. */
   };
@@ -78,8 +78,8 @@ struct
    * @struct TransformBuffer
    * @brief Estructura alineada a 16 bytes para pasar matrices de transformación al CBuffer de la GPU.
    */
-  struct alignas(16) TransformBuffer
-  {
+  struct alignas(16)
+  TransformBuffer {
     DirectX::XMFLOAT4X4 worldViewProjection; /**< Matriz combinada WVP. */
   };
 
@@ -117,7 +117,7 @@ struct
    * @return true si la compilación fue exitosa, false en caso de error.
    */
   static bool
-    CompileShader(const wchar_t* filename, const char* entryPoint,
+  CompileShader(const wchar_t* filename, const char* entryPoint,
       const char* shaderModel, ID3DBlob** shaderBlob) noexcept {
     if (!filename || !entryPoint || !shaderModel || !shaderBlob) {
       return false;
@@ -134,9 +134,11 @@ struct
     compileFlags |= D3DCOMPILE_OPTIMIZATION_LEVEL3;
 #endif
 
-    ID3DBlob* errors = nullptr;
+    ID3DBlob*
+      errors = nullptr;
 
-    const HRESULT result = D3DCompileFromFile(
+    const HRESULT
+      result = D3DCompileFromFile(
       filename,
       nullptr,
       D3D_COMPILE_STANDARD_FILE_INCLUDE,
@@ -148,8 +150,7 @@ struct
       &errors
     );
 
-    if (errors)
-    {
+    if (errors) {
       OutputDebugStringA(
         static_cast<const char*>(
           errors->GetBufferPointer()
@@ -159,8 +160,7 @@ struct
       SafeRelease(errors);
     }
 
-    if (FAILED(result))
-    {
+    if (FAILED(result)) {
       SafeRelease(*shaderBlob);
       return false;
     }
@@ -171,10 +171,9 @@ struct
   /**
    * @brief Libera ordenadamente todos los recursos de Direct3D 11 creados en memoria/GPU.
    */
-  void ReleaseResources() noexcept
-  {
-    if (context)
-    {
+  void
+  ReleaseResources() noexcept {
+    if (context) {
       context->ClearState();
       context->Flush();
     }
@@ -208,14 +207,12 @@ struct
 Engine::Engine() noexcept
   : m_implementation(
     new (std::nothrow) Implementation{}
-  )
-{
+  ) {
 }
 /**
  * @brief Destructor. Destruye la implementación e invoca la limpieza general.
  */
-Engine::~Engine() noexcept
-{
+Engine::~Engine() noexcept {
   Shutdown();
 
   delete m_implementation;
@@ -224,17 +221,16 @@ Engine::~Engine() noexcept
 /**
  * @brief Prepara el entorno gráfico DirectX 11, crea el Swap Chain, shaders, layout y búferes 3D.
  */
-bool Engine::Initialize(
+bool
+Engine::Initialize(
   void* nativeWindow,
   std::uint32_t width,
   std::uint32_t height
-) noexcept
-{
+) noexcept {
   if (!m_implementation ||
     !nativeWindow ||
     width == 0 ||
-    height == 0)
-  {
+    height == 0) {
     return false;
   }
 
@@ -261,11 +257,13 @@ bool Engine::Initialize(
   swapChainDescription.Windowed = true;
   swapChainDescription.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
-  constexpr D3D_FEATURE_LEVEL featureLevels[]{
+  constexpr D3D_FEATURE_LEVEL
+    featureLevels[] {
     D3D_FEATURE_LEVEL_11_0
   };
 
-  D3D_FEATURE_LEVEL selectedFeatureLevel{};
+  D3D_FEATURE_LEVEL
+    selectedFeatureLevel{};
 
   HRESULT result = D3D11CreateDeviceAndSwapChain(
     nullptr,
@@ -283,8 +281,7 @@ bool Engine::Initialize(
   );
 
   // Si falla la GPU física, utiliza el rasterizador por software de Windows (WARP).
-  if (FAILED(result))
-  {
+  if (FAILED(result)) {
     SafeRelease(engine.swapChain);
     SafeRelease(engine.context);
     SafeRelease(engine.device);
@@ -305,8 +302,7 @@ bool Engine::Initialize(
     );
   }
 
-  if (FAILED(result))
-  {
+  if (FAILED(result)) {
     engine.ReleaseResources();
     return false;
   }
@@ -319,8 +315,7 @@ bool Engine::Initialize(
     reinterpret_cast<void**>(&backBuffer)
   );
 
-  if (FAILED(result))
-  {
+  if (FAILED(result)) {
     engine.ReleaseResources();
     return false;
   }
@@ -330,13 +325,13 @@ bool Engine::Initialize(
 
   SafeRelease(backBuffer);
 
-  if (FAILED(result))
-  {
+  if (FAILED(result)) {
     engine.ReleaseResources();
     return false;
   }
 
-  D3D11_TEXTURE2D_DESC depthBufferDescription{};
+  D3D11_TEXTURE2D_DESC
+    depthBufferDescription{};
 
   depthBufferDescription.Width = engine.width;
   depthBufferDescription.Height = engine.height;
@@ -353,8 +348,7 @@ bool Engine::Initialize(
   result = engine.device->CreateTexture2D(&depthBufferDescription, nullptr,
     &engine.depthStencilBuffer);
 
-  if (FAILED(result))
-  {
+  if (FAILED(result)) {
     engine.ReleaseResources();
     return false;
   }
@@ -362,13 +356,13 @@ bool Engine::Initialize(
   result = engine.device->CreateDepthStencilView(engine.depthStencilBuffer,
     nullptr, &engine.depthStencilView);
 
-  if (FAILED(result))
-  {
+  if (FAILED(result)) {
     engine.ReleaseResources();
     return false;
   }
 
-  D3D11_VIEWPORT viewport{};
+  D3D11_VIEWPORT
+    viewport{};
 
   viewport.TopLeftX = 0.0f;
   viewport.TopLeftY = 0.0f;
@@ -387,15 +381,16 @@ bool Engine::Initialize(
     &viewport
   );
 
-  ID3DBlob* vertexShaderBlob = nullptr;
-  ID3DBlob* pixelShaderBlob = nullptr;
+  ID3DBlob*
+    vertexShaderBlob = nullptr;
+  ID3DBlob*
+    pixelShaderBlob = nullptr;
 
   if (!Implementation::CompileShader(
     L"shaders\\Cube.hlsl",
     "VSMain",
     "vs_5_0",
-    &vertexShaderBlob))
-  {
+    &vertexShaderBlob)) {
     engine.ReleaseResources();
     return false;
   }
@@ -404,8 +399,7 @@ bool Engine::Initialize(
     L"shaders\\Cube.hlsl",
     "PSMain",
     "ps_5_0",
-    &pixelShaderBlob))
-  {
+    &pixelShaderBlob)) {
     SafeRelease(vertexShaderBlob);
     engine.ReleaseResources();
     return false;
@@ -418,8 +412,7 @@ bool Engine::Initialize(
     &engine.vertexShader
   );
 
-  if (FAILED(result))
-  {
+  if (FAILED(result)) {
     SafeRelease(pixelShaderBlob);
     SafeRelease(vertexShaderBlob);
     engine.ReleaseResources();
@@ -433,15 +426,15 @@ bool Engine::Initialize(
     &engine.pixelShader
   );
 
-  if (FAILED(result))
-  {
+  if (FAILED(result)) {
     SafeRelease(pixelShaderBlob);
     SafeRelease(vertexShaderBlob);
     engine.ReleaseResources();
     return false;
   }
 
-  constexpr D3D11_INPUT_ELEMENT_DESC inputElements[]{
+  constexpr D3D11_INPUT_ELEMENT_DESC
+    inputElements[]{
     {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,
     static_cast<UINT>(offsetof(Implementation::Vertex, position)),
     D3D11_INPUT_PER_VERTEX_DATA, 0},
@@ -461,14 +454,13 @@ bool Engine::Initialize(
   SafeRelease(pixelShaderBlob);
   SafeRelease(vertexShaderBlob);
 
-  if (FAILED(result))
-  {
+  if (FAILED(result)) {
     engine.ReleaseResources();
     return false;
   }
 
-  constexpr Implementation::Vertex vertices[]
-  {
+  constexpr
+  Implementation::Vertex vertices[] {
     // Frente
     {
         { -1.0f,  1.0f, -1.0f },
@@ -528,14 +520,13 @@ bool Engine::Initialize(
     &engine.vertexBuffer
   );
 
-  if (FAILED(result))
-  {
+  if (FAILED(result)) {
     engine.ReleaseResources();
     return false;
   }
 
-  constexpr std::uint16_t indices[]
-  {
+  constexpr
+  std::uint16_t indices[] {
     // Frente
     0, 1, 2,
     0, 2, 3,
@@ -575,8 +566,7 @@ bool Engine::Initialize(
   result = engine.device->CreateBuffer(&indexBufferDescription, &indexData,
     &engine.indexBuffer);
 
-  if (FAILED(result))
-  {
+  if (FAILED(result)) {
     engine.ReleaseResources();
     return false;
   }
@@ -592,8 +582,7 @@ bool Engine::Initialize(
   result = engine.device->CreateBuffer(&transformBufferDescription, nullptr,
     &engine.transformBuffer);
 
-  if (FAILED(result))
-  {
+  if (FAILED(result)) {
     engine.ReleaseResources();
     return false;
   }
@@ -609,8 +598,7 @@ bool Engine::Initialize(
   result = engine.device->CreateRasterizerState(&rasterizerDescription,
     &engine.rasterizerState);
 
-  if (FAILED(result))
-  {
+  if (FAILED(result)) {
     engine.ReleaseResources();
     return false;
   }
@@ -626,8 +614,8 @@ bool Engine::Initialize(
  * 3D animadas según el tiempo transcurrido, actualiza el constant buffer y ejecuta
  * las llamadas a la pipeline de pintado (DrawIndexed).
  */
-void Engine::Render() noexcept
-{
+void
+Engine::Render() noexcept {
   if (!m_implementation)
     return;
 
@@ -641,13 +629,12 @@ void Engine::Render() noexcept
     !engine.transformBuffer ||
     !engine.inputLayout ||
     !engine.vertexShader ||
-    !engine.pixelShader)
-  {
+    !engine.pixelShader) {
     return;
   }
 
-  constexpr float clearColor[]
-  {
+  constexpr float 
+  clearColor[] {
     0.03f,
     0.04f,
     0.08f,
@@ -661,29 +648,36 @@ void Engine::Render() noexcept
   engine.context->ClearDepthStencilView(engine.depthStencilView,
     D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-  const auto currentTime = std::chrono::steady_clock::now();
+  const auto
+    currentTime = std::chrono::steady_clock::now();
 
   const float elapsedSeconds = std::chrono::duration<float>
     (currentTime - engine.startTime).count();
 
   using namespace DirectX;
 
-  const XMMATRIX world = XMMatrixRotationX(elapsedSeconds * 0.4f) *
+  const XMMATRIX
+    world = XMMatrixRotationX(elapsedSeconds * 0.4f) *
     XMMatrixRotationY(elapsedSeconds * 0.8f);
 
-  const XMVECTOR cameraPosition = XMVectorSet(0.0f, 1.5f, -5.0f, 1.0f);
+  const XMVECTOR
+    cameraPosition = XMVectorSet(0.0f, 1.5f, -5.0f, 1.0f);
 
-  const XMVECTOR cameraTarget = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+  const XMVECTOR
+    cameraTarget = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
 
-  const XMVECTOR cameraUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+  const XMVECTOR
+    cameraUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
-  const XMMATRIX view = XMMatrixLookAtLH(cameraPosition, cameraTarget, cameraUp);
+  const XMMATRIX
+    view = XMMatrixLookAtLH(cameraPosition, cameraTarget, cameraUp);
 
-  const float aspectRatio = static_cast<float>(engine.width) /
+  const float
+    aspectRatio = static_cast<float>(engine.width) /
     static_cast<float>(engine.height);
 
-  const XMMATRIX projection = XMMatrixPerspectiveFovLH(XM_PIDIV4,
-    aspectRatio, 0.1f, 100.0f);
+  const XMMATRIX
+    projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, aspectRatio, 0.1f, 100.0f);
 
   Implementation::TransformBuffer transform{};
 
@@ -692,9 +686,11 @@ void Engine::Render() noexcept
 
   engine.context->UpdateSubresource(engine.transformBuffer, 0, nullptr, &transform, 0, 0);
 
-  constexpr UINT stride = sizeof(Implementation::Vertex);
+  constexpr UINT
+    stride = sizeof(Implementation::Vertex);
 
-  constexpr UINT offset = 0;
+  constexpr UINT
+    offset = 0;
 
   engine.context->IASetVertexBuffers(0, 1, &engine.vertexBuffer, &stride, &offset);
 
@@ -719,8 +715,8 @@ void Engine::Render() noexcept
 /**
  * @brief Apaga la instancia y delega la destrucción de los recursos de DirectX al método Pimpl.
  */
-void Engine::Shutdown() noexcept
-{
+void
+Engine::Shutdown() noexcept {
   if (m_implementation)
     m_implementation->ReleaseResources();
 }

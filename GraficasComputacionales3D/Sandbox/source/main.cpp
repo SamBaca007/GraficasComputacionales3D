@@ -40,8 +40,7 @@ wWinMain(HINSTANCE instance, HINSTANCE previousInstance, PWSTR commandLine,
   Window window;
 
   // 1. Inicializar el subsistema de la ventana
-  if (!window.Create(instance, L"Surreal Engine 3D", CLIENT_WIDTH, CLIENT_HEIGHT))
-  {
+  if (!window.Create(instance, L"Surreal Engine 3D", CLIENT_WIDTH, CLIENT_HEIGHT)) {
     MessageBoxW(
       nullptr,
       L"No se pudo crear la ventana.",
@@ -54,8 +53,7 @@ wWinMain(HINSTANCE instance, HINSTANCE previousInstance, PWSTR commandLine,
   Engine engine;
 
   // 2. Inicializar el motor gráfico y sus recursos de DirectX
-  if (!engine.Initialize(window.GetHandle(), CLIENT_WIDTH, CLIENT_HEIGHT))
-  {
+  if (!engine.Initialize(window.GetHandle(), CLIENT_WIDTH, CLIENT_HEIGHT)) {
     MessageBoxW(
       window.GetHandle(),
       L"No se pudo inicializar el Engine.\n\n"
@@ -73,12 +71,10 @@ wWinMain(HINSTANCE instance, HINSTANCE previousInstance, PWSTR commandLine,
   window.Show(showCommand);
 
   // 4. Bucle Principal (Game Loop)
-  while (window.ProcessMessages())
-  {
+  while (window.ProcessMessages()) {
     // Si la aplicación está minimizada, suspende el hilo hasta recibir un mensaje
     // para evitar el consumo innecesario de CPU y GPU.
-    if (window.IsMinimized())
-    {
+    if (window.IsMinimized()) {
       WaitMessage();
       continue;
     }

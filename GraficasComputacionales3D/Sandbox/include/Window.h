@@ -54,7 +54,7 @@ public:
    * @return true si la ventana se creó exitosamente, false en caso de error.
    */
   bool
-    Create(HINSTANCE instance, const wchar_t* title,
+  Create(HINSTANCE instance, const wchar_t* title,
       UINT clientWidth, UINT clientHeight) noexcept;
   /**
    * @brief Muestra u oculta la ventana según el comando especificado.
@@ -62,36 +62,37 @@ public:
    * @param showCommand Comando de visualización de Win32 (ej. SW_SHOW, SW_HIDE).
    */
   void
-    Show(int showCommand) noexcept;
+  Show(int showCommand) noexcept;
   /**
    * @brief Destruye la ventana y desregistra su clase en el sistema operativo.
    */
   void
-    Destroy() noexcept;
+  Destroy() noexcept;
   /**
    * @brief Extrae y procesa los mensajes de la cola de mensajes de Windows.
    *
    * Este método debe llamarse en cada ciclo del bucle principal para mantener
    * la ventana activa y responsiva.
    *
-   * @return true si los mensajes se procesaron con normalidad. false si se recibió WM_QUIT (solicitud de cierre).
+   * @return true si los mensajes se procesaron con normalidad.
+   * false si se recibió WM_QUIT (solicitud de cierre).
    */
   bool
-    ProcessMessages() noexcept;
+  ProcessMessages() noexcept;
   /**
    * @brief Obtiene el handle nativo (HWND) de la ventana.
    *
    * @return HWND Handle de la ventana actual.
    */
   HWND
-    GetHandle() const noexcept { return m_handle; }
+  GetHandle() const noexcept { return m_handle; }
   /**
    * @brief Comprueba si la ventana se encuentra actualmente minimizada.
    *
    * @return true si la ventana está minimizada, false de lo contrario.
    */
   bool
-    IsMinimized() const noexcept;
+  IsMinimized() const noexcept;
 
 private:
   /**
@@ -108,7 +109,8 @@ private:
       WPARAM wparam, LPARAM lparam);
 
   /** @brief Nombre identificador para la clase de ventana registrada en Win32. */
-  static constexpr const wchar_t* ClassName = L"SurrealEngine3DWindow";
+  static constexpr
+    const wchar_t* ClassName = L"SurrealEngine3DWindow";
 
   HINSTANCE m_instance = nullptr;      /**< Instancia de la aplicación de Windows. */
   HWND m_handle = nullptr;             /**< Handle nativo de la ventana creada. */

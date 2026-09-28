@@ -10,8 +10,8 @@
  * @struct VSInput
  * @brief Estructura de entrada para el Vertex Shader.
  */
-struct VSInput
-{
+struct
+VSInput {
     /** @brief Posición del vértice en 3D (X, Y, Z). Semántica: POSITION. */
     float3 position : POSITION;
     
@@ -22,8 +22,8 @@ struct VSInput
  * @struct PSInput
  * @brief Estructura de intercambio entre el Vertex Shader y el Pixel Shader.
  */
-struct PSInput
-{
+struct
+PSInput {
     /** @brief Posición final del vértice. Semántica del sistema: SV_POSITION. */
     float4 position : SV_POSITION;
     
@@ -40,8 +40,8 @@ struct PSInput
  * @param input Datos del vértice leídos desde el Vertex Buffer.
  * @return PSInput Datos procesados enviados a la etapa de rasterización.
  */
-PSInput VSMain(VSInput input)
-{
+PSInput
+VSMain(VSInput input) {
     PSInput output;
     
     // Paso directo de coordenadas locales a la pantalla (NDC) sin proyección.
@@ -54,9 +54,10 @@ PSInput VSMain(VSInput input)
  * @brief Punto de entrada del Pixel Shader.
  * 
  * @param input Datos interpolados provenientes del rasterizador.
- * @return float4 Color final del píxel renderizado en el Render Target. Semántica: SV_TARGET.
+ * @return float4 Color final del píxel renderizado en el Render Target.
+ * Semántica: SV_TARGET.
  */
-float4 PSMain(PSInput input) : SV_TARGET
-{
+float4
+PSMain(PSInput input) : SV_TARGET {
     return input.color;
 }

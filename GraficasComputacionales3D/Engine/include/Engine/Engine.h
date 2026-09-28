@@ -16,7 +16,8 @@
   * renderizar los frames y limpiar los recursos. Su ciclo de vida está
   * estrictamente controlado (no se puede copiar ni mover).
   */
-class ENGINE_API Engine final {
+class
+ENGINE_API Engine final {
 public:
   /**
    * @brief Constructor por defecto.
@@ -46,7 +47,8 @@ public:
    * @param height Alto del área de renderizado en píxeles.
    * @return true si el motor se inicializó correctamente, false si ocurrió un error crítico.
    */
-  bool Initialize(
+  bool
+  Initialize(
     void* nativeWindow,
     std::uint32_t width,
     std::uint32_t height
@@ -57,20 +59,23 @@ public:
    * Coordina la limpieza del back buffer, el envío de comandos de dibujado
    * a la GPU y la presentación (swap) en la pantalla.
    */
-  void Render() noexcept;
+  void
+  Render() noexcept;
   /**
    * @brief Apaga el motor y destruye los subsistemas activos.
    *
    * Garantiza que todos los recursos alojados en la GPU y estructuras internas
    * se liberen de forma segura antes de cerrar la aplicación.
    */
-  void Shutdown() noexcept;
+  void
+  Shutdown() noexcept;
 
 private:
   /**
    * @brief Estructura opaca que contiene los verdaderos datos y lógica de la API gráfica.
    */
-  struct Implementation;
+  struct
+  Implementation;
 
   /** @brief Puntero a la implementación oculta (Pimpl idiom). */
   Implementation* m_implementation = nullptr;

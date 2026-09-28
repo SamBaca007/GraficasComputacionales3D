@@ -8,8 +8,7 @@
  /**
   * @brief Destruye la instancia de la ventana invocando la limpieza de recursos.
   */
-Window::~Window()
-{
+Window::~Window() {
   Destroy();
 }
 /**
@@ -29,8 +28,7 @@ bool
 Window::Create(HINSTANCE instance, const wchar_t* title,
   UINT clientWidth, UINT clientHeight) noexcept {
   if (m_handle || !instance || !title ||
-    clientWidth == 0 || clientHeight == 0)
-  {
+    clientWidth == 0 || clientHeight == 0) {
     return false;
   }
 
@@ -57,16 +55,15 @@ Window::Create(HINSTANCE instance, const wchar_t* title,
     WS_SYSMENU |
     WS_MINIMIZEBOX;
 
-  RECT rectangle
-  {
+  RECT
+  rectangle {
     0,
     0,
     static_cast<LONG>(clientWidth),
     static_cast<LONG>(clientHeight)
   };
 
-  if (!AdjustWindowRect(&rectangle, style, FALSE))
-  {
+  if (!AdjustWindowRect(&rectangle, style, FALSE)) {
     Destroy();
     return false;
   }
@@ -89,8 +86,7 @@ Window::Create(HINSTANCE instance, const wchar_t* title,
     nullptr
   );
 
-  if (!m_handle)
-  {
+  if (!m_handle) {
     Destroy();
     return false;
   }
@@ -102,10 +98,9 @@ Window::Create(HINSTANCE instance, const wchar_t* title,
  *
  * @param showCommand Comando de visualización de Win32 (ej. SW_SHOW).
  */
-void Window::Show(int showCommand) noexcept
-{
-  if (m_handle)
-  {
+void
+Window::Show(int showCommand) noexcept {
+  if (m_handle) {
     ShowWindow(m_handle, showCommand);
     UpdateWindow(m_handle);
   }
@@ -113,16 +108,14 @@ void Window::Show(int showCommand) noexcept
 /**
  * @brief Destruye la ventana de Win32 y desregistra la clase asociada si estaba registrada.
  */
-void Window::Destroy() noexcept
-{
-  if (m_handle)
-  {
+void
+Window::Destroy() noexcept {
+  if (m_handle) {
     DestroyWindow(m_handle);
     m_handle = nullptr;
   }
 
-  if (m_classRegistered)
-  {
+  if (m_classRegistered) {
     UnregisterClassW(ClassName, m_instance);
     m_classRegistered = false;
   }
@@ -135,14 +128,12 @@ void Window::Destroy() noexcept
  * @return true Si se procesaron los mensajes correctamente.
  * @return false Si se interceptó el mensaje WM_QUIT (indicando el cierre de la aplicación).
  */
-bool Window::ProcessMessages() noexcept
-{
+bool
+Window::ProcessMessages() noexcept {
   MSG message{};
 
-  while (PeekMessageW(&message, nullptr, 0, 0, PM_REMOVE))
-  {
-    if (message.message == WM_QUIT)
-    {
+  while (PeekMessageW(&message, nullptr, 0, 0, PM_REMOVE)) {
+    if (message.message == WM_QUIT) {
       return false;
     }
 
@@ -158,8 +149,8 @@ bool Window::ProcessMessages() noexcept
  * @return true Si la ventana está minimizada.
  * @return false Si la ventana está visible o no se ha creado.
  */
-bool Window::IsMinimized() const noexcept
-{
+bool
+Window::IsMinimized() const noexcept {
   return m_handle && IsIconic(m_handle);
 }
 /**
@@ -171,8 +162,8 @@ bool Window::IsMinimized() const noexcept
  * @param lparam Parámetro adicional de mensaje.
  * @return LRESULT Resultado del procesamiento del mensaje.
  */
-LRESULT Window::WindowProcedure(HWND handle, UINT message, WPARAM wparam, LPARAM lparam)
-{
+LRESULT
+Window::WindowProcedure(HWND handle, UINT message, WPARAM wparam, LPARAM lparam) {
   switch (message)
   {
   case WM_DESTROY:
