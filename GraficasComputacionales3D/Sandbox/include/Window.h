@@ -104,7 +104,8 @@ private:
    * @param lparam Información adicional específica del mensaje.
    * @return LRESULT Resultado del procesamiento del mensaje.
    */
-  static LRESULT CALLBACK
+  static
+    LRESULT CALLBACK
     WindowProcedure(HWND handle, UINT message,
       WPARAM wparam, LPARAM lparam);
 
@@ -112,7 +113,7 @@ private:
   static constexpr
     const wchar_t* ClassName = L"SurrealEngine3DWindow";
 
-  HINSTANCE m_instance = nullptr;      /**< Instancia de la aplicación de Windows. */
-  HWND m_handle = nullptr;             /**< Handle nativo de la ventana creada. */
-  bool m_classRegistered = false;      /**< Bandera que indica si la clase de ventana ya fue registrada. */
+  HINSTANCE m_instance = nullptr;  /**< Instancia de la aplicación de Windows. */
+  HWND m_handle = nullptr;         /**< Handle nativo de la ventana creada. */
+  bool m_classRegistered = false;  /**< Bandera que indica si la clase de ventana ya fue registrada. */
 };
