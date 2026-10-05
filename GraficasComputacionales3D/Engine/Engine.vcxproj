@@ -214,9 +214,11 @@
     <ClInclude Include="include\Engine\Api.h" />
     <ClInclude Include="include\Engine\Engine.h" />
     <ClInclude Include="include\Engine\Prerequisites.h" />
+    <ClInclude Include="include\Rendering\Device.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\Engine.cpp" />
+    <ClCompile Include="source\Engine\Engine.cpp" />
+    <ClCompile Include="source\Rendering\Device.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Shaders\Cube.hlsl">

@@ -11,6 +11,61 @@
 #include "Api.h"
 #include <cstdint>
 #include <Windows.h>
+#include <DirectXMath.h>
+#include <Windows.h>
+#include <d3d11.h>
+#include <d3dcompiler.h>
+#include <sstream>
+#include <cstddef>
+#include <chrono>
+#include <cstdint>
+#include <new>
+
+ // MACROS
+
+  /**
+   * @brief Macro clásica para liberar y anular una interfaz COM de DirectX.
+   * @param x Puntero a la interfaz COM.
+   */
+#define SAFE_RELEASE(x) if(x != nullptr) x->Release(); x = nullptr;
+   /**
+    * @brief Macro de registro para notificar la creación de recursos en la salida de depuración de Visual Studio.
+    */
+#define MESSAGE( classObj, method, state )   \
+{                                             \
+   std::wostringstream os_;                  \
+   os_ << classObj << "::" << method << " : " << "[CREATION OF RESOURCE " << ": " << state << "] \n"; \
+   OutputDebugStringW( os_.str().c_str() );  \
+}
+    /**
+     * @brief Macro para registrar mensajes de error en la ventana de depuración de Win32.
+     */
+#define ERROR(classObj, method, errorMSG)                     \
+{                                                             \
+    try {                                                     \
+        std::wostringstream os_;                              \
+        os_ << L"ERROR : " << classObj << L"::" << method     \
+            << L" : " << errorMSG << L"\n";                   \
+        OutputDebugStringW(os_.str().c_str());                \
+    } catch (...) {                                           \
+        OutputDebugStringW(L"Failed to log error message.\n");\
+    }                                                         \
+}
+     /**
+      * @brief Helper genérico para liberar de forma segura punteros de interfaz COM de DirectX.
+      *
+      * @tparam T Tipo del objeto COM que implementa IUnknown.
+      * @param object Referencia al puntero del objeto a liberar.
+      */
+template<typename T>
+void
+SafeRelease(T*& object) noexcept {
+  if (object != nullptr)
+  {
+    object->Release();
+    object = nullptr;
+  }
+}
 
 extern
 "C" {
