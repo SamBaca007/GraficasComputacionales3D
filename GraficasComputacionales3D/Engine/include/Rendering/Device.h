@@ -14,8 +14,12 @@ public:
   destroy();
 
   ID3D11Device*
-  getDevice() const
+  getDevice() const noexcept
   { return m_device; }
+
+  ID3D11Device**
+    getDevice() noexcept
+  { return &m_device; }
 
   HRESULT
   CreateRenderTargetView(ID3D11Resource* pResource,
