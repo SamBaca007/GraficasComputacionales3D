@@ -93,7 +93,7 @@ Device::CreateDepthStencilView(ID3D11Resource* pResource,
 
 HRESULT
 Device::CreateVertexShader(const void* pShaderBytecode,
-                            SIZE_T BytecodeLength,
+                            unsigned int BytecodeLength,
   ID3D11ClassLinkage* pClassLinkage,
   ID3D11VertexShader** ppVertexShader) {
   if (ppVertexShader == nullptr) {
@@ -123,7 +123,7 @@ Device::CreateVertexShader(const void* pShaderBytecode,
 
 HRESULT
 Device::CreatePixelShader(const void* pShaderBytecode,
-                          SIZE_T BytecodeLength,
+                          unsigned int BytecodeLength,
                           ID3D11ClassLinkage* pClassLinkage,
                           ID3D11PixelShader** ppPixelShader) {
   if (ppPixelShader == nullptr) {
@@ -152,7 +152,7 @@ Device::CreatePixelShader(const void* pShaderBytecode,
 
 HRESULT
 Device::CreateInputLayout(const D3D11_INPUT_ELEMENT_DESC* pInputElementDescs,
-                          UINT NumElements,
+                          unsigned int NumElements,
                           const void* pShaderBytecodeWithInputSignature,
                           SIZE_T BytecodeLength,
                           ID3D11InputLayout** ppInputLayout) {

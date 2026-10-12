@@ -38,19 +38,19 @@ public:
 
   HRESULT
   CreateVertexShader(const void* pShaderBytecode,
-                     SIZE_T BytecodeLength,
+                     unsigned int BytecodeLength,
                      ID3D11ClassLinkage* pClassLinkage,
                      ID3D11VertexShader** ppVertexShader);
 
   HRESULT
   CreatePixelShader(const void* pShaderBytecode,
-                    SIZE_T BytecodeLength,
+                    unsigned int BytecodeLength,
                     ID3D11ClassLinkage* pClassLinkage,
                     ID3D11PixelShader** ppPixelShader);
 
   HRESULT
   CreateInputLayout(const D3D11_INPUT_ELEMENT_DESC* pInputElementDescs,
-                    UINT NumElements,
+                    unsigned int NumElements,
                     const void* pShaderBytecodeWithInputSignature,
                     SIZE_T BytecodeLength,
                     ID3D11InputLayout** ppInputLayout);

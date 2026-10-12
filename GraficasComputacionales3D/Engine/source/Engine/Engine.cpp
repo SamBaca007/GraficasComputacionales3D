@@ -5,6 +5,7 @@
 
 #include <Engine/Engine.h>
 #include <Rendering/Device.h>
+#include <Rendering/DeviceContext.h>
 
 /**
  * @struct Engine::Implementation
