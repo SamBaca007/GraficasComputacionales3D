@@ -6,13 +6,14 @@
 #include <Engine/Engine.h>
 #include <Rendering/Device.h>
 #include <Rendering/DeviceContext.h>
+#include <Rendering/SwapChain.h>
 
 /**
  * @struct Engine::Implementation
  * @brief Estructura privada de implementación que encapsula todos los recursos e interfaces de Direct3D 11.
  */
 struct
-  Engine::Implementation {
+Engine::Implementation {
   /**
    * @struct Vertex
    * @brief Representación en memoria de la estructura de un vértice.
@@ -38,8 +39,10 @@ struct
 
   Device device;
   // ID3D11Device* device = nullptr;                  /**< Dispositivo DirectX 11 para crear recursos. */
-  ID3D11DeviceContext* context = nullptr;             /**< Contexto de comandos de dibujado en la GPU. */
-  IDXGISwapChain* swapChain = nullptr;                /**< Cadena de intercambio para el doble búfer. */
+  DeviceContext context;
+  // ID3D11DeviceContext* context = nullptr;             /**< Contexto de comandos de dibujado en la GPU. */
+  SwapChain swapChain;
+  // IDXGISwapChain* swapChain = nullptr;                /**< Cadena de intercambio para el doble búfer. */
   ID3D11RenderTargetView* renderTarget = nullptr;     /**< Vista del búfer de color principal. */
   ID3D11Texture2D* depthStencilBuffer = nullptr;      /**< Textura para el búfer de profundidad. */
   ID3D11DepthStencilView* depthStencilView = nullptr;  /**< Vista del búfer de profundidad y stencil. */
@@ -122,10 +125,10 @@ struct
    */
   void
   ReleaseResources() noexcept {
-    if (context) {
-      context->ClearState();
-      context->Flush();
-    }
+    // if (context) {
+      // context->ClearState();
+      // context->Flush();
+    // }
 
     SafeRelease(rasterizerState);
     SafeRelease(transformBuffer);
@@ -140,8 +143,10 @@ struct
     SafeRelease(depthStencilBuffer);
     SafeRelease(renderTarget);
 
-    SafeRelease(swapChain);
-    SafeRelease(context);
+    swapChain.destroy();
+    // SafeRelease(swapChain);
+    context.destroy();
+    // SafeRelease(context);
     device.destroy();
     // SafeRelease(device);
 
@@ -224,16 +229,18 @@ Engine::Initialize(
     ARRAYSIZE(featureLevels),
     D3D11_SDK_VERSION,
     &swapChainDescription,
-    &engine.swapChain,
-    engine.device.getDevice(),
+    engine.swapChain.getSwapChainAdress(),
+    engine.device.getDeviceAdress(),
     &selectedFeatureLevel,
-    &engine.context
+    engine.context.getDeviceContextAdress()
   );
 
   // Si falla la GPU física, utiliza el rasterizador por software de Windows (WARP).
   if (FAILED(result)) {
-    SafeRelease(engine.swapChain);
-    SafeRelease(engine.context);
+    engine.swapChain.destroy();
+    // SafeRelease(engine.swapChain);
+    engine.context.destroy();
+    // SafeRelease(engine.context);
     engine.device.destroy();
     // SafeRelease(engine.device);
 
@@ -246,10 +253,10 @@ Engine::Initialize(
       ARRAYSIZE(featureLevels),
       D3D11_SDK_VERSION,
       &swapChainDescription,
-      &engine.swapChain,
-      engine.device.getDevice(),
+      engine.swapChain.getSwapChainAdress(),
+      engine.device.getDeviceAdress(),
       &selectedFeatureLevel,
-      &engine.context
+      engine.context.getDeviceContextAdress()
     );
   }
 
@@ -260,11 +267,8 @@ Engine::Initialize(
 
   ID3D11Texture2D* backBuffer = nullptr;
 
-  result = engine.swapChain->GetBuffer(
-    0,
-    __uuidof(ID3D11Texture2D),
-    reinterpret_cast<void**>(&backBuffer)
-  );
+  result = engine.swapChain.GetBuffer(0, __uuidof(ID3D11Texture2D),
+                                      reinterpret_cast<void**>(&backBuffer));
 
   if (FAILED(result)) {
     engine.ReleaseResources();
@@ -327,7 +331,7 @@ Engine::Initialize(
   viewport.MinDepth = 0.0f;
   viewport.MaxDepth = 1.0f;
 
-  engine.context->RSSetViewports(
+  engine.context.RSSetViewports(
     1,
     &viewport
   );
@@ -572,8 +576,8 @@ Engine::Render() noexcept {
 
   Implementation& engine = *m_implementation;
 
-  if (!engine.context ||
-    !engine.swapChain ||
+  if (!engine.context.getDeviceContextAdress() ||
+    !engine.swapChain.getSwapChainAdress() ||
     !engine.renderTarget ||
     !engine.depthStencilView ||
     !engine.vertexBuffer ||
@@ -592,11 +596,11 @@ Engine::Render() noexcept {
     1.0f
   };
 
-  engine.context->OMSetRenderTargets(1, &engine.renderTarget, engine.depthStencilView);
+  engine.context.OMSetRenderTargets(1, &engine.renderTarget, engine.depthStencilView);
 
-  engine.context->ClearRenderTargetView(engine.renderTarget, clearColor);
+  engine.context.ClearRenderTargetView(engine.renderTarget, clearColor);
 
-  engine.context->ClearDepthStencilView(engine.depthStencilView,
+  engine.context.ClearDepthStencilView(engine.depthStencilView,
     D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
   const auto
@@ -635,7 +639,7 @@ Engine::Render() noexcept {
   XMStoreFloat4x4(&transform.worldViewProjection,
     XMMatrixTranspose(world * view * projection));
 
-  engine.context->UpdateSubresource(engine.transformBuffer, 0, nullptr, &transform, 0, 0);
+  engine.context.UpdateSubresource(engine.transformBuffer, 0, nullptr, &transform, 0, 0);
 
   constexpr UINT
     stride = sizeof(Implementation::Vertex);
@@ -643,25 +647,25 @@ Engine::Render() noexcept {
   constexpr UINT
     offset = 0;
 
-  engine.context->IASetVertexBuffers(0, 1, &engine.vertexBuffer, &stride, &offset);
+  engine.context.IASetVertexBuffers(0, 1, &engine.vertexBuffer, &stride, &offset);
 
-  engine.context->IASetIndexBuffer(engine.indexBuffer, DXGI_FORMAT_R16_UINT, 0);
+  engine.context.IASetIndexBuffer(engine.indexBuffer, DXGI_FORMAT_R16_UINT, 0);
 
-  engine.context->IASetInputLayout(engine.inputLayout);
+  engine.context.IASetInputLayout(engine.inputLayout);
 
-  engine.context->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+  engine.context.IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-  engine.context->RSSetState(engine.rasterizerState);
+  engine.context.RSSetState(engine.rasterizerState);
 
-  engine.context->VSSetShader(engine.vertexShader, nullptr, 0);
+  engine.context.VSSetShader(engine.vertexShader, nullptr, 0);
 
-  engine.context->VSSetConstantBuffers(0, 1, &engine.transformBuffer);
+  engine.context.VSSetConstantBuffers(0, 1, &engine.transformBuffer);
 
-  engine.context->PSSetShader(engine.pixelShader, nullptr, 0);
+  engine.context.PSSetShader(engine.pixelShader, nullptr, 0);
 
-  engine.context->DrawIndexed(36, 0, 0);
+  engine.context.DrawIndexed(36, 0, 0);
 
-  engine.swapChain->Present(1, 0);
+  engine.swapChain.Present(1, 0);
 }
 /**
  * @brief Apaga la instancia y delega la destrucción de los recursos de DirectX al método Pimpl.

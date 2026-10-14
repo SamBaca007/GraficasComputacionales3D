@@ -1,5 +1,16 @@
 #include "Rendering/Device.h"
 
+Device::~Device() {
+  destroy(); // Como ya tienes un método destroy que libera m_device, lo reutilizamos.
+}
+
+void
+Device::init() {
+  // Aquí irá la lógica para crear el dispositivo (D3D11CreateDevice o D3D11CreateDeviceAndSwapChain)
+  // Si por ahora la inicialización la haces desde otro lado, déjalo vacío o pon un mensaje:
+  MESSAGE("Device", "init", "Device initialized.");
+}
+
 void
 Device::destroy() {
   SafeRelease(m_device);

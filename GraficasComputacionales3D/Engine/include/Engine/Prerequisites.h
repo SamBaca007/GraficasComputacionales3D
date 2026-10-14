@@ -20,6 +20,7 @@
 #include <chrono>
 #include <cstdint>
 #include <new>
+#include <dxgi.h> // Necesario para las interfaces de DXGI
 
  // MACROS
 

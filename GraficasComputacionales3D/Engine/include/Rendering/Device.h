@@ -18,7 +18,7 @@ public:
   { return m_device; }
 
   ID3D11Device**
-    getDevice() noexcept
+    getDeviceAdress() noexcept
   { return &m_device; }
 
   HRESULT

@@ -15,6 +15,9 @@ public:
   getDeviceContextAdress() noexcept
   { return &m_DeviceContext; }
 
+  void
+  destroy();
+
   ID3D11DeviceContext& requireContext() const noexcept;
 
   void RSSetViewports(unsigned int NumViewports,
@@ -73,4 +76,5 @@ public:
 
 private:
   ID3D11DeviceContext* m_DeviceContext = nullptr;
+  IDXGISwapChain* m_SwapChain = nullptr; // <- Para Present
 };

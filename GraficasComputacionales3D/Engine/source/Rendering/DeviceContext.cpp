@@ -1,5 +1,10 @@
 #include "Rendering/DeviceContext.h"
 
+void
+DeviceContext::destroy() {
+  SafeRelease(m_DeviceContext);
+}
+
 DeviceContext::~DeviceContext() {
   if (m_DeviceContext) {
     m_DeviceContext->Release();
