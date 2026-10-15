@@ -39,6 +39,9 @@
     <ClCompile Include="source\Rendering\SwapChain.cpp">
       <Filter>Archivos de origen\Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="source\Rendering\Texture2D.cpp">
+      <Filter>Archivos de origen\Rendering</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Engine\Api.h">
@@ -57,6 +60,9 @@
       <Filter>Archivos de encabezado\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="include\Rendering\SwapChain.h">
+      <Filter>Archivos de encabezado\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Rendering\Texture2D.h">
       <Filter>Archivos de encabezado\Rendering</Filter>
     </ClInclude>
   </ItemGroup>

@@ -7,6 +7,7 @@
 #include <Rendering/Device.h>
 #include <Rendering/DeviceContext.h>
 #include <Rendering/SwapChain.h>
+#include <Rendering/Texture2D.h>
 
 /**
  * @struct Engine::Implementation
@@ -44,7 +45,8 @@ Engine::Implementation {
   SwapChain swapChain;
   // IDXGISwapChain* swapChain = nullptr;                /**< Cadena de intercambio para el doble búfer. */
   ID3D11RenderTargetView* renderTarget = nullptr;     /**< Vista del búfer de color principal. */
-  ID3D11Texture2D* depthStencilBuffer = nullptr;      /**< Textura para el búfer de profundidad. */
+  Texture2D depthStencilBuffer;
+  // ID3D11Texture2D* depthStencilBuffer = nullptr;      /**< Textura para el búfer de profundidad. */
   ID3D11DepthStencilView* depthStencilView = nullptr;  /**< Vista del búfer de profundidad y stencil. */
 
   ID3D11Buffer* vertexBuffer = nullptr;    /**< Búfer de vértices del cubo en VRAM. */
@@ -140,7 +142,8 @@ Engine::Implementation {
     SafeRelease(vertexShader);
 
     SafeRelease(depthStencilView);
-    SafeRelease(depthStencilBuffer);
+    depthStencilBuffer.destroy();
+    // SafeRelease(depthStencilBuffer);
     SafeRelease(renderTarget);
 
     swapChain.destroy();
@@ -301,14 +304,14 @@ Engine::Initialize(
   depthBufferDescription.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 
   result = engine.device.CreateTexture2D(&depthBufferDescription, nullptr,
-    &engine.depthStencilBuffer);
+    engine.depthStencilBuffer.getTextureAdress());
 
   if (FAILED(result)) {
     engine.ReleaseResources();
     return false;
   }
 
-  result = engine.device.CreateDepthStencilView(engine.depthStencilBuffer,
+  result = engine.device.CreateDepthStencilView(engine.depthStencilBuffer.getTexture(),
     nullptr, &engine.depthStencilView);
 
   if (FAILED(result)) {
