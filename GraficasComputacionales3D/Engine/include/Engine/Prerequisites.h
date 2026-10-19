@@ -52,6 +52,13 @@
         OutputDebugStringW(L"Failed to log error message.\n");\
     }                                                         \
 }
+
+enum
+ExtensionType {
+  DDS = 0,
+  PNG = 1,
+  JPG = 2
+};
      /**
       * @brief Helper genérico para liberar de forma segura punteros de interfaz COM de DirectX.
       *

@@ -288,31 +288,24 @@ Engine::Initialize(
     return false;
   }
 
-  D3D11_TEXTURE2D_DESC
-    depthBufferDescription{};
-
-  depthBufferDescription.Width = engine.width;
-  depthBufferDescription.Height = engine.height;
-  depthBufferDescription.MipLevels = 1;
-  depthBufferDescription.ArraySize = 1;
-  depthBufferDescription.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-
-  depthBufferDescription.SampleDesc.Count = 1;
-  depthBufferDescription.SampleDesc.Quality = 0;
-  depthBufferDescription.Usage = D3D11_USAGE_DEFAULT;
-
-  depthBufferDescription.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-
-  result = engine.device.CreateTexture2D(&depthBufferDescription, nullptr,
-    engine.depthStencilBuffer.getTextureAdress());
+  result = engine.depthStencilBuffer.init(
+    engine.device,
+    engine.width,
+    engine.height,
+    DXGI_FORMAT_D24_UNORM_S8_UINT,
+    D3D11_BIND_DEPTH_STENCIL
+  );
 
   if (FAILED(result)) {
     engine.ReleaseResources();
     return false;
   }
 
-  result = engine.device.CreateDepthStencilView(engine.depthStencilBuffer.getTexture(),
-    nullptr, &engine.depthStencilView);
+  result = engine.device.CreateDepthStencilView(
+    engine.depthStencilBuffer.getTexture(),
+    nullptr,
+    &engine.depthStencilView
+  );
 
   if (FAILED(result)) {
     engine.ReleaseResources();
