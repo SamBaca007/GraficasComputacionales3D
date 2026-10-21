@@ -84,10 +84,27 @@ Texture2D::init(Device& device,
 }
 
 void
+Texture2D::render(DeviceContext& deviceContext,
+                  unsigned int StartSlot,
+                  unsigned int NumViews) {
+  if (!deviceContext.getDeviceContext()) {
+    ERROR("Texture", "render", "Device Context is mull.");
+    return;
+  }
+
+  if (m_TextureFromImg) {
+    deviceContext.PSSetShaderResources(StartSlot, NumViews, &m_TextureFromImg);
+  }
+}
+
+void
 Texture2D::destroy() {
-  // Liberamos los recursos de DirectX usando la macro que ya tienes
-  SafeRelease(m_Texture);
-  SafeRelease(m_TextureFromImg);
+  if (m_Texture != nullptr) {
+    SAFE_RELEASE(m_Texture);
+  }
+  if (m_TextureFromImg != nullptr) {
+    SAFE_RELEASE(m_TextureFromImg);
+  }
 }
 
 Texture2D::~Texture2D() noexcept {

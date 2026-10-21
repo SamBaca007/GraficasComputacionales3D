@@ -23,6 +23,10 @@ public:
   void RSSetViewports(unsigned int NumViewports,
                       const D3D11_VIEWPORT* pViewports);
 
+  void PSSetShaderResources(unsigned int StartSlot,
+                            unsigned int NumViews,
+                            ID3D11ShaderResourceView* const* ppShaderResourceViews);
+
   void OMSetRenderTargets(unsigned int NumViews,
                           ID3D11RenderTargetView* const* ppRenderTargetViews,
                           ID3D11DepthStencilView* pDepthStencilView);

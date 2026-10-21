@@ -31,6 +31,16 @@ DeviceContext::RSSetViewports(unsigned int NumViewports,
 }
 
 void
+DeviceContext::PSSetShaderResources(unsigned int StartSlot,
+                                    unsigned int NumViews,
+                                    ID3D11ShaderResourceView* const* ppShaderResourceViews) {
+  if (!ppShaderResourceViews || NumViews == 0) {
+    ERROR("DeviceContext", "PSSetShaderResources", "Invalid shader resource view parameters.");
+    return;
+  }
+}
+
+void
 DeviceContext::OMSetRenderTargets(unsigned int NumViews,
   ID3D11RenderTargetView* const* ppRenderTargetViews,
   ID3D11DepthStencilView* pDepthStencilView) {
