@@ -23,7 +23,8 @@
   * Esta clase maneja la interacción directa con la API de Win32 para la ventana.
   * Está diseñada para no ser copiable ni heredable.
   */
-class Window final {
+class
+Window final {
 public:
   /**
    * @brief Constructor por defecto.
@@ -55,7 +56,7 @@ public:
    */
   bool
   Create(HINSTANCE instance, const wchar_t* title,
-      UINT clientWidth, UINT clientHeight) noexcept;
+         UINT clientWidth, UINT clientHeight) noexcept;
   /**
    * @brief Muestra u oculta la ventana según el comando especificado.
    *
@@ -105,9 +106,9 @@ private:
    * @return LRESULT Resultado del procesamiento del mensaje.
    */
   static
-    LRESULT CALLBACK
-    WindowProcedure(HWND handle, UINT message,
-      WPARAM wparam, LPARAM lparam);
+  LRESULT CALLBACK
+  WindowProcedure(HWND handle, UINT message,
+                  WPARAM wparam, LPARAM lparam);
 
   /** @brief Nombre identificador para la clase de ventana registrada en Win32. */
   static constexpr

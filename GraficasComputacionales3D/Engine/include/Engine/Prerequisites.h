@@ -59,7 +59,8 @@
      * @enum ExtensionType
      * @brief Enumeración que define los tipos de extensión de imagen soportados por el motor.
      */
-enum ExtensionType {
+enum
+ExtensionType {
   DDS = 0, ///< Formato DirectDraw Surface, ideal para texturas comprimidas en DirectX.
   PNG = 1, ///< Formato Portable Network Graphics, sin pérdida y con soporte de transparencia.
   JPG = 2  ///< Formato Joint Photographic Experts Group, ideal para imágenes con pérdida.
@@ -69,7 +70,8 @@ enum ExtensionType {
  * @struct Vertex
  * @brief Representación en memoria de la estructura básica de un vértice.
  */
-struct Vertex {
+struct
+Vertex {
   float position[3]; /**< Posición 3D (X, Y, Z). */
   float color[4];    /**< Color RGBA. */
 };

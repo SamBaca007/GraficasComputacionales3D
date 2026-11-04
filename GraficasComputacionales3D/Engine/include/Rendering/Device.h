@@ -8,7 +8,8 @@
  * memoria en la tarjeta gráfica (VRAM) y crear objetos como buffers, texturas,
  * shaders, vistas y estados, los cuales luego son utilizados por el DeviceContext.
  */
-class Device {
+class
+Device {
 public:
   /**
    * @brief Constructor por defecto.
@@ -70,8 +71,8 @@ public:
    */
   HRESULT
   CreateRenderTargetView(ID3D11Resource* pResource,
-      const D3D11_RENDER_TARGET_VIEW_DESC* pDesc,
-      ID3D11RenderTargetView** ppRTView);
+                         const D3D11_RENDER_TARGET_VIEW_DESC* pDesc,
+                         ID3D11RenderTargetView** ppRTView);
 
   /**
    * @brief Crea un recurso de textura 2D en la memoria gráfica.
@@ -83,8 +84,8 @@ public:
    */
   HRESULT
   CreateTexture2D(const D3D11_TEXTURE2D_DESC* pDesc,
-      const D3D11_SUBRESOURCE_DATA* pInitialData,
-      ID3D11Texture2D** ppTexture2D);
+                  const D3D11_SUBRESOURCE_DATA* pInitialData,
+                  ID3D11Texture2D** ppTexture2D);
 
   /**
    * @brief Crea una vista de Depth/Stencil (DSV).
@@ -99,8 +100,8 @@ public:
    */
   HRESULT
   CreateDepthStencilView(ID3D11Resource* pResource,
-      const D3D11_DEPTH_STENCIL_VIEW_DESC* pDesc,
-      ID3D11DepthStencilView** ppDepthStencilView);
+                         const D3D11_DEPTH_STENCIL_VIEW_DESC* pDesc,
+                         ID3D11DepthStencilView** ppDepthStencilView);
 
   /**
    * @brief Crea un programa Vertex Shader a partir de su código compilado (bytecode).
@@ -113,9 +114,9 @@ public:
    */
   HRESULT
   CreateVertexShader(const void* pShaderBytecode,
-      unsigned int BytecodeLength,
-      ID3D11ClassLinkage* pClassLinkage,
-      ID3D11VertexShader** ppVertexShader);
+                     unsigned int BytecodeLength,
+                     ID3D11ClassLinkage* pClassLinkage,
+                     ID3D11VertexShader** ppVertexShader);
 
   /**
    * @brief Crea un programa Pixel Shader a partir de su código compilado (bytecode).
@@ -128,9 +129,9 @@ public:
    */
   HRESULT
   CreatePixelShader(const void* pShaderBytecode,
-      unsigned int BytecodeLength,
-      ID3D11ClassLinkage* pClassLinkage,
-      ID3D11PixelShader** ppPixelShader);
+                    unsigned int BytecodeLength,
+                    ID3D11ClassLinkage* pClassLinkage,
+                    ID3D11PixelShader** ppPixelShader);
 
   /**
    * @brief Crea un diseño de entrada (Input Layout) para los vértices.
@@ -147,10 +148,10 @@ public:
    */
   HRESULT
   CreateInputLayout(const D3D11_INPUT_ELEMENT_DESC* pInputElementDescs,
-      unsigned int NumElements,
-      const void* pShaderBytecodeWithInputSignature,
-      SIZE_T BytecodeLength,
-      ID3D11InputLayout** ppInputLayout);
+                    unsigned int NumElements,
+                    const void* pShaderBytecodeWithInputSignature,
+                    SIZE_T BytecodeLength,
+                    ID3D11InputLayout** ppInputLayout);
 
   /**
    * @brief Crea un buffer en memoria de video (VRAM).
@@ -165,8 +166,8 @@ public:
    */
   HRESULT
   CreateBuffer(const D3D11_BUFFER_DESC* pDesc,
-      const D3D11_SUBRESOURCE_DATA* pInitialData,
-      ID3D11Buffer** ppBuffer);
+               const D3D11_SUBRESOURCE_DATA* pInitialData,
+               ID3D11Buffer** ppBuffer);
 
   /**
    * @brief Crea un estado de rasterización.
@@ -180,7 +181,7 @@ public:
    */
   HRESULT
   CreateRasterizerState(const D3D11_RASTERIZER_DESC* pRasterizerDesc,
-      ID3D11RasterizerState** ppRasterizerState);
+                        ID3D11RasterizerState** ppRasterizerState);
 
 private:
   ID3D11Device* m_device = nullptr; ///< Puntero nativo al dispositivo de Direct3D 11.

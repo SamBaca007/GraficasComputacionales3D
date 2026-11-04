@@ -48,11 +48,7 @@ public:
    * @return true si el motor se inicializó correctamente, false si ocurrió un error crítico.
    */
   bool
-  Initialize(
-    void* nativeWindow,
-    std::uint32_t width,
-    std::uint32_t height
-  ) noexcept;
+  Initialize(void* nativeWindow, std::uint32_t width, std::uint32_t height) noexcept;
   /**
    * @brief Ejecuta las rutinas de dibujado para el frame actual.
    *

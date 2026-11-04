@@ -8,7 +8,8 @@
  * configurar el pipeline gráfico, enlazar recursos a las distintas etapas (shaders)
  * y realizar las llamadas de dibujo (draw calls).
  */
-class DeviceContext {
+class
+DeviceContext {
 public:
   /**
    * @brief Constructor por defecto.
@@ -59,7 +60,7 @@ public:
    */
   void
   RSSetViewports(unsigned int NumViewports,
-    const D3D11_VIEWPORT* pViewports);
+                 const D3D11_VIEWPORT* pViewports);
 
   /**
    * @brief Enlaza recursos (como texturas) a la etapa del Pixel Shader (PS).
@@ -70,8 +71,8 @@ public:
    */
   void
   PSSetShaderResources(unsigned int StartSlot,
-    unsigned int NumViews,
-    ID3D11ShaderResourceView* const* ppShaderResourceViews);
+                       unsigned int NumViews,
+                       ID3D11ShaderResourceView* const* ppShaderResourceViews);
 
   /**
    * @brief Enlaza los Render Targets y el Depth/Stencil al Output Merger (OM).
@@ -82,8 +83,8 @@ public:
    */
   void
   OMSetRenderTargets(unsigned int NumViews,
-    ID3D11RenderTargetView* const* ppRenderTargetViews,
-    ID3D11DepthStencilView* pDepthStencilView);
+                     ID3D11RenderTargetView* const* ppRenderTargetViews,
+                     ID3D11DepthStencilView* pDepthStencilView);
 
   /**
    * @brief Limpia la vista del Render Target con un color específico.

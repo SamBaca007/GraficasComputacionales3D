@@ -32,7 +32,7 @@ SwapChain::destroy() {
  */
 HRESULT
 SwapChain::init(Device device, HWND windowHandle, unsigned int width, unsigned int height) {
-  ID3D11Device* pDevice = device.getDevice();
+                ID3D11Device* pDevice = device.getDevice();
   if (!pDevice) {
     ERROR("SwapChain", "init", "Provided Device is null.");
     return E_INVALIDARG;
@@ -105,8 +105,8 @@ SwapChain::~SwapChain() {
  */
 HRESULT
 SwapChain::GetBuffer(unsigned int Buffer,
-  REFIID riid,
-  void** ppSurface) {
+                     REFIID riid,
+                     void** ppSurface) {
   if (ppSurface == nullptr) {
     ERROR("SwapChain", "GetBuffer", "Output pointer ppSurface is null.");
     return E_POINTER;
@@ -140,7 +140,7 @@ SwapChain::GetBuffer(unsigned int Buffer,
  */
 HRESULT
 SwapChain::Present(unsigned int SyncInterval,
-  unsigned int Flags) {
+                   unsigned int Flags) {
   // Verificamos que el puntero al SwapChain exista antes de llamar a Present
   if (!m_SwapChain) {
     ERROR("SwapChain", "Present", "SwapChain is not initialized.");
@@ -164,7 +164,7 @@ SwapChain::Present(unsigned int SyncInterval,
  */
 HRESULT
 SwapChain::ResizeBuffers(unsigned int width,
-  unsigned int height) {
+                         unsigned int height) {
   if (!m_SwapChain) {
     ERROR("SwapChain", "ResizeBuffers", "SwapChain is not initialized.");
     return E_FAIL;

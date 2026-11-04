@@ -8,7 +8,8 @@
  * la malla, así como su matriz de transformación local. Es la estructura de
  * datos que posteriormente leerá la clase Buffer para pasarlos a la GPU.
  */
-class MeshComponent {
+class
+MeshComponent {
 public:
   /**
    * @brief Constructor por defecto.

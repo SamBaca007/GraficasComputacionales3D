@@ -11,7 +11,8 @@ class DeviceContext;
  * Facilita la creación, actualización y enlace (binding) de diferentes tipos
  * de buffers (Vertex, Index, Constant) en el pipeline gráfico.
  */
-class Buffer {
+class
+Buffer {
 public:
 
   /**
@@ -64,12 +65,12 @@ public:
    */
   void
   update(DeviceContext& deviceContext,
-      ID3D11Resource* pDstResource,
-      unsigned int DstSubresource,
-      const D3D11_BOX* pDstBox,
-      const void* pSrcData,
-      unsigned int SrcRowPitch,
-      unsigned int SrcDepthPitch);
+         ID3D11Resource* pDstResource,
+         unsigned int DstSubresource,
+         const D3D11_BOX* pDstBox,
+         const void* pSrcData,
+         unsigned int SrcRowPitch,
+         unsigned int SrcDepthPitch);
 
   /**
    * @brief Enlaza el buffer al pipeline gráfico para el renderizado.
@@ -85,10 +86,10 @@ public:
    */
   void
   render(DeviceContext& deviceContext,
-      unsigned int startSlot,
-      unsigned int numBuffers,
-      bool setPixelShader = false,
-      DXGI_FORMAT format = DXGI_FORMAT_UNKNOWN);
+         unsigned int startSlot,
+         unsigned int numBuffers,
+         bool setPixelShader = false,
+         DXGI_FORMAT format = DXGI_FORMAT_UNKNOWN);
 
   /**
    * @brief Libera la memoria del buffer y destruye el recurso de Direct3D.
@@ -106,8 +107,8 @@ public:
    */
   HRESULT
   CreateBuffer(Device& device,
-      D3D11_BUFFER_DESC& desc,
-      D3D11_SUBRESOURCE_DATA* initData);
+               D3D11_BUFFER_DESC& desc,
+               D3D11_SUBRESOURCE_DATA* initData);
 
   /**
    * @brief Obtiene el puntero directo al recurso ID3D11Buffer.

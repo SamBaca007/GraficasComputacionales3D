@@ -12,7 +12,8 @@ class DeviceContext;
  * Soporta la carga de texturas desde archivos, creación de texturas vacías
  * (para Render Targets o Depth Stencils) y la generación de Cubemaps.
  */
-class Texture2D {
+class
+Texture2D {
 public:
   /**
    * @brief Constructor por defecto.
@@ -42,8 +43,8 @@ public:
    */
   HRESULT
   init(Device& device,
-      const std::string& textureName,
-      ExtensionType extensionType);
+       const std::string& textureName,
+       ExtensionType extensionType);
 
   /**
    * @brief Inicializa una textura vacía con dimensiones y propiedades específicas.
@@ -61,12 +62,12 @@ public:
    */
   HRESULT
   init(Device& device,
-      unsigned int width,
-      unsigned int height,
-      DXGI_FORMAT Format,
-      unsigned int BindFlags,
-      unsigned int sampleCount = 1,
-      unsigned int qualityLevels = 0);
+       unsigned int width,
+       unsigned int height,
+       DXGI_FORMAT Format,
+       unsigned int BindFlags,
+       unsigned int sampleCount = 1,
+       unsigned int qualityLevels = 0);
 
   /**
    * @brief Inicializa la textura tomando como base otra textura existente.
@@ -89,8 +90,8 @@ public:
    */
   HRESULT
   InitTextureFromImage(Device& device,
-      const std::string& fullPath,
-      Texture2D& texture);
+                       const std::string& fullPath,
+                       Texture2D& texture);
 
   /**
    * @brief Método para actualizar lógicamente la textura (actualmente en desarrollo/placeholder).
@@ -127,9 +128,9 @@ public:
    */
   HRESULT
   CreateCubemap(Device& device,
-      DeviceContext& deviceContext,
-      const std::array<std::string, 6> facePaths,
-      bool generateMips /*= false*/);
+                DeviceContext& deviceContext,
+                const std::array<std::string, 6> facePaths,
+                bool generateMips /*= false*/);
 
   /**
    * @brief Crea un Shader Resource View específico para una de las caras del Cubemap.
@@ -143,10 +144,10 @@ public:
    */
   ID3D11ShaderResourceView*
   CreateCubemapFaceSRV(ID3D11Device* device,
-      ID3D10Texture2D* cubemapTex, // Nota: usa ID3D10Texture2D en código base
-      DXGI_FORMAT format,
-      unsigned int faceIndex,
-      unsigned int mipLevels = 1);
+                       ID3D10Texture2D* cubemapTex, // Nota: usa ID3D10Texture2D en código base
+                       DXGI_FORMAT format,
+                       unsigned int faceIndex,
+                       unsigned int mipLevels = 1);
 
   /**
    * @brief Obtiene el puntero nativo de la textura.

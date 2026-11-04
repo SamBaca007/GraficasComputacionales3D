@@ -50,7 +50,7 @@ DeviceContext::requireContext() const noexcept {
  */
 void
 DeviceContext::RSSetViewports(unsigned int NumViewports,
-  const D3D11_VIEWPORT* pViewports) {
+                              const D3D11_VIEWPORT* pViewports) {
   if (!pViewports || NumViewports == 0) {
     ERROR("DeviceContext", "RSSetViewports", "Invalid viewport parameters.");
     return;
@@ -67,8 +67,8 @@ DeviceContext::RSSetViewports(unsigned int NumViewports,
  */
 void
 DeviceContext::PSSetShaderResources(unsigned int StartSlot,
-  unsigned int NumViews,
-  ID3D11ShaderResourceView* const* ppShaderResourceViews) {
+                                    unsigned int NumViews,
+                                    ID3D11ShaderResourceView* const* ppShaderResourceViews) {
   if (!ppShaderResourceViews || NumViews == 0) {
     ERROR("DeviceContext", "PSSetShaderResources", "Invalid shader resource view parameters.");
     return;
@@ -87,9 +87,9 @@ DeviceContext::PSSetShaderResources(unsigned int StartSlot,
  */
 void
 DeviceContext::OMSetRenderTargets(unsigned int NumViews,
-  ID3D11RenderTargetView* const* ppRenderTargetViews,
-  ID3D11DepthStencilView* pDepthStencilView) {
-  requireContext().OMSetRenderTargets(NumViews, ppRenderTargetViews, pDepthStencilView);
+                                  ID3D11RenderTargetView* const* ppRenderTargetViews,
+                                  ID3D11DepthStencilView* pDepthStencilView) {
+                                  requireContext().OMSetRenderTargets(NumViews, ppRenderTargetViews, pDepthStencilView);
 }
 
 /**
@@ -100,7 +100,7 @@ DeviceContext::OMSetRenderTargets(unsigned int NumViews,
  */
 void
 DeviceContext::ClearRenderTargetView(ID3D11RenderTargetView* pRenderTargetView,
-  const float ColorRGBA[4]) {
+                                     const float ColorRGBA[4]) {
   if (!pRenderTargetView) {
     ERROR("DeviceContext", "ClearRenderTargetView", "RenderTargetView is null.");
     return;
@@ -118,9 +118,9 @@ DeviceContext::ClearRenderTargetView(ID3D11RenderTargetView* pRenderTargetView,
  */
 void
 DeviceContext::ClearDepthStencilView(ID3D11DepthStencilView* pDepthStencilView,
-  unsigned int ClearFlags,
-  float Depth,
-  unsigned int Stencil) {
+                                     unsigned int ClearFlags,
+                                     float Depth,
+                                     unsigned int Stencil) {
   if (!pDepthStencilView) {
     ERROR("DeviceContext", "ClearDepthStencilView", "DepthStencilView is null.");
     return;
@@ -140,11 +140,11 @@ DeviceContext::ClearDepthStencilView(ID3D11DepthStencilView* pDepthStencilView,
  */
 void
 DeviceContext::UpdateSubresource(ID3D11Resource* pDstResource,
-  unsigned int DstSubresource,
-  const D3D11_BOX* pDstBox,
-  const void* pSrcData,
-  unsigned int SrcRowPitch,
-  unsigned int SrcDepthPitch) {
+                                 unsigned int DstSubresource,
+                                 const D3D11_BOX* pDstBox,
+                                 const void* pSrcData,
+                                 unsigned int SrcRowPitch,
+                                 unsigned int SrcDepthPitch) {
   if (!pDstResource || !pSrcData) {
     ERROR("DeviceContext", "UpdateSubresource", "Invalid destination resource or source data.");
     return;
@@ -164,10 +164,10 @@ DeviceContext::UpdateSubresource(ID3D11Resource* pDstResource,
  */
 void
 DeviceContext::IASetVertexBuffers(unsigned int StartSlot,
-  unsigned int NumBuffers,
-  ID3D11Buffer* const* ppVertexBuffers,
-  const unsigned int* pStrides,
-  const unsigned int* pOffsets) {
+                                  unsigned int NumBuffers,
+                                  ID3D11Buffer* const* ppVertexBuffers,
+                                  const unsigned int* pStrides,
+                                  const unsigned int* pOffsets) {
   if (NumBuffers > 0 && (!ppVertexBuffers || !pStrides || !pOffsets)) {
     ERROR("DeviceContext", "IASetVertexBuffers", "Invalid vertex buffer arrays.");
     return;
@@ -186,8 +186,8 @@ DeviceContext::IASetVertexBuffers(unsigned int StartSlot,
  */
 void
 DeviceContext::IASetIndexBuffer(ID3D11Buffer* pIndexBuffer,
-  DXGI_FORMAT Format,
-  unsigned int Offset) {
+                                DXGI_FORMAT Format,
+                                unsigned int Offset) {
   requireContext().IASetIndexBuffer(pIndexBuffer, Format, Offset);
 }
 
@@ -236,8 +236,8 @@ DeviceContext::RSSetState(ID3D11RasterizerState* pRasterizerState) {
  */
 void
 DeviceContext::VSSetShader(ID3D11VertexShader* pVertexShader,
-  ID3D11ClassInstance* const* ppClassInstances,
-  unsigned int NumClassInstances) {
+                           ID3D11ClassInstance* const* ppClassInstances,
+                           unsigned int NumClassInstances) {
   requireContext().VSSetShader(pVertexShader, ppClassInstances, NumClassInstances);
 }
 
@@ -250,8 +250,8 @@ DeviceContext::VSSetShader(ID3D11VertexShader* pVertexShader,
  */
 void
 DeviceContext::VSSetConstantBuffers(unsigned int StartSlot,
-  unsigned int NumBuffers,
-  ID3D11Buffer* const* ppConstantBuffers) {
+                                    unsigned int NumBuffers,
+                                    ID3D11Buffer* const* ppConstantBuffers) {
   if (NumBuffers > 0 && !ppConstantBuffers) {
     ERROR("DeviceContext", "VSSetConstantBuffers", "Constant buffer array is null.");
     return;
@@ -270,8 +270,8 @@ DeviceContext::VSSetConstantBuffers(unsigned int StartSlot,
  */
 void
 DeviceContext::PSSetShader(ID3D11PixelShader* pPixelShader,
-  ID3D11ClassInstance* const* ppClassInstances,
-  unsigned int NumClassInstances) {
+                           ID3D11ClassInstance* const* ppClassInstances,
+                           unsigned int NumClassInstances) {
   requireContext().PSSetShader(pPixelShader, ppClassInstances, NumClassInstances);
 }
 
@@ -284,8 +284,8 @@ DeviceContext::PSSetShader(ID3D11PixelShader* pPixelShader,
  */
 void
 DeviceContext::DrawIndexed(unsigned int IndexCount,
-  unsigned int StartIndexLocation,
-  int BaseVertexLocation) {
+                           unsigned int StartIndexLocation,
+                           int BaseVertexLocation) {
   if (IndexCount == 0) {
     ERROR("DeviceContext", "DrawIndexed", "Index count is zero.");
     return;

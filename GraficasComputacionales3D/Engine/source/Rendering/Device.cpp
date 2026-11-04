@@ -48,8 +48,8 @@ Device::destroy() {
  */
 HRESULT
 Device::CreateRenderTargetView(ID3D11Resource* pResource,
-  const D3D11_RENDER_TARGET_VIEW_DESC* pDesc,
-  ID3D11RenderTargetView** ppRTView) {
+                               const D3D11_RENDER_TARGET_VIEW_DESC* pDesc,
+                               ID3D11RenderTargetView** ppRTView) {
   if (ppRTView == nullptr) {
     ERROR("Device", "CreateRenderTargetView", "Output pointer is null.");
     return E_POINTER;
@@ -84,8 +84,8 @@ Device::CreateRenderTargetView(ID3D11Resource* pResource,
  */
 HRESULT
 Device::CreateTexture2D(const D3D11_TEXTURE2D_DESC* pDesc,
-  const D3D11_SUBRESOURCE_DATA* pInitialData,
-  ID3D11Texture2D** ppTexture2D) {
+                        const D3D11_SUBRESOURCE_DATA* pInitialData,
+                        ID3D11Texture2D** ppTexture2D) {
   if (ppTexture2D == nullptr) {
     ERROR("Device", "CreateTexture2D", "Output pointer is null.");
     return E_POINTER;
@@ -121,8 +121,8 @@ Device::CreateTexture2D(const D3D11_TEXTURE2D_DESC* pDesc,
  */
 HRESULT
 Device::CreateDepthStencilView(ID3D11Resource* pResource,
-  const D3D11_DEPTH_STENCIL_VIEW_DESC* pDesc,
-  ID3D11DepthStencilView** ppDepthStencilView) {
+                               const D3D11_DEPTH_STENCIL_VIEW_DESC* pDesc,
+                               ID3D11DepthStencilView** ppDepthStencilView) {
   if (ppDepthStencilView == nullptr) {
     ERROR("Device", "CreateDepthStencilView", "Output pointer is null.");
     return E_POINTER;
@@ -159,9 +159,9 @@ Device::CreateDepthStencilView(ID3D11Resource* pResource,
  */
 HRESULT
 Device::CreateVertexShader(const void* pShaderBytecode,
-  unsigned int BytecodeLength,
-  ID3D11ClassLinkage* pClassLinkage,
-  ID3D11VertexShader** ppVertexShader) {
+                           unsigned int BytecodeLength,
+                           ID3D11ClassLinkage* pClassLinkage,
+                           ID3D11VertexShader** ppVertexShader) {
   if (ppVertexShader == nullptr) {
     ERROR("Device", "CreateVertexShader", "Output pointer is null.");
     return E_POINTER;
@@ -198,9 +198,9 @@ Device::CreateVertexShader(const void* pShaderBytecode,
  */
 HRESULT
 Device::CreatePixelShader(const void* pShaderBytecode,
-  unsigned int BytecodeLength,
-  ID3D11ClassLinkage* pClassLinkage,
-  ID3D11PixelShader** ppPixelShader) {
+                          unsigned int BytecodeLength,
+                          ID3D11ClassLinkage* pClassLinkage,
+                          ID3D11PixelShader** ppPixelShader) {
   if (ppPixelShader == nullptr) {
     ERROR("Device", "CreatePixelShader", "Output pointer is null.");
     return E_POINTER;
@@ -237,10 +237,10 @@ Device::CreatePixelShader(const void* pShaderBytecode,
  */
 HRESULT
 Device::CreateInputLayout(const D3D11_INPUT_ELEMENT_DESC* pInputElementDescs,
-  unsigned int NumElements,
-  const void* pShaderBytecodeWithInputSignature,
-  SIZE_T BytecodeLength,
-  ID3D11InputLayout** ppInputLayout) {
+                          unsigned int NumElements,
+                          const void* pShaderBytecodeWithInputSignature,
+                          SIZE_T BytecodeLength,
+                          ID3D11InputLayout** ppInputLayout) {
   if (ppInputLayout == nullptr) {
     ERROR("Device", "CreateInputLayout", "Output pointer is null.");
     return E_POINTER;
@@ -254,7 +254,8 @@ Device::CreateInputLayout(const D3D11_INPUT_ELEMENT_DESC* pInputElementDescs,
     return E_INVALIDARG;
   }
 
-  HRESULT result = m_device->CreateInputLayout(pInputElementDescs, NumElements, pShaderBytecodeWithInputSignature, BytecodeLength, ppInputLayout);
+  HRESULT result = m_device->CreateInputLayout(pInputElementDescs,
+    NumElements, pShaderBytecodeWithInputSignature, BytecodeLength, ppInputLayout);
 
   if (FAILED(result)) {
     ERROR("Device", "CreateInputLayout",
@@ -276,8 +277,8 @@ Device::CreateInputLayout(const D3D11_INPUT_ELEMENT_DESC* pInputElementDescs,
  */
 HRESULT
 Device::CreateBuffer(const D3D11_BUFFER_DESC* pDesc,
-  const D3D11_SUBRESOURCE_DATA* pInitialData,
-  ID3D11Buffer** ppBuffer) {
+                     const D3D11_SUBRESOURCE_DATA* pInitialData,
+                     ID3D11Buffer** ppBuffer) {
   if (ppBuffer == nullptr) {
     ERROR("Device", "CreateBuffer", "Output pointer is null.");
     return E_POINTER;
@@ -312,7 +313,7 @@ Device::CreateBuffer(const D3D11_BUFFER_DESC* pDesc,
  */
 HRESULT
 Device::CreateRasterizerState(const D3D11_RASTERIZER_DESC* pRasterizerDesc,
-  ID3D11RasterizerState** ppRasterizerState) {
+                              ID3D11RasterizerState** ppRasterizerState) {
   if (ppRasterizerState == nullptr) {
     ERROR("Device", "CreateRasterizerState", "Output pointer is null.");
     return E_POINTER;

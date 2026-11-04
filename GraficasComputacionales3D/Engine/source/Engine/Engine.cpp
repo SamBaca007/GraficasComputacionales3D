@@ -73,7 +73,7 @@ Engine::Implementation {
    */
   static bool
   CompileShader(const wchar_t* filename, const char* entryPoint,
-      const char* shaderModel, ID3DBlob** shaderBlob) noexcept {
+                const char* shaderModel, ID3DBlob** shaderBlob) noexcept {
     if (!filename || !entryPoint || !shaderModel || !shaderBlob) {
       return false;
     }
@@ -195,11 +195,7 @@ Engine::~Engine() noexcept {
  * @return true si todo el entorno se inicializó correctamente; false si ocurrió algún error de creación.
  */
 bool
-Engine::Initialize(
-  void* nativeWindow,
-  std::uint32_t width,
-  std::uint32_t height
-) noexcept {
+Engine::Initialize(void* nativeWindow, std::uint32_t width, std::uint32_t height) noexcept {
   if (!m_implementation ||
     !nativeWindow ||
     width == 0 ||
@@ -262,20 +258,13 @@ Engine::Initialize(
     engine.device.destroy();
     // SafeRelease(engine.device);
 
-    result = D3D11CreateDeviceAndSwapChain(
-      nullptr,
-      D3D_DRIVER_TYPE_WARP,
-      nullptr,
-      0,
-      featureLevels,
-      ARRAYSIZE(featureLevels),
-      D3D11_SDK_VERSION,
-      &swapChainDescription,
-      engine.swapChain.getSwapChainAdress(),
-      engine.device.getDeviceAdress(),
-      &selectedFeatureLevel,
-      engine.context.getDeviceContextAdress()
-    );
+    result = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_WARP, nullptr, 0,
+                                           featureLevels, ARRAYSIZE(featureLevels),
+                                           D3D11_SDK_VERSION, &swapChainDescription,
+                                           engine.swapChain.getSwapChainAdress(),
+                                           engine.device.getDeviceAdress(),
+                                           &selectedFeatureLevel,
+                                           engine.context.getDeviceContextAdress());
   }
 
   if (FAILED(result)) {
@@ -303,24 +292,17 @@ Engine::Initialize(
     return false;
   }
 
-  result = engine.depthStencilBuffer.init(
-    engine.device,
-    engine.width,
-    engine.height,
-    DXGI_FORMAT_D24_UNORM_S8_UINT,
-    D3D11_BIND_DEPTH_STENCIL
-  );
+  result = engine.depthStencilBuffer.init(engine.device, engine.width, engine.height,
+                                          DXGI_FORMAT_D24_UNORM_S8_UINT,
+                                          D3D11_BIND_DEPTH_STENCIL);
 
   if (FAILED(result)) {
     engine.ReleaseResources();
     return false;
   }
 
-  result = engine.device.CreateDepthStencilView(
-    engine.depthStencilBuffer.getTexture(),
-    nullptr,
-    &engine.depthStencilView
-  );
+  result = engine.device.CreateDepthStencilView(engine.depthStencilBuffer.getTexture(),
+                                                nullptr, &engine.depthStencilView);
 
   if (FAILED(result)) {
     engine.ReleaseResources();
@@ -352,31 +334,22 @@ Engine::Initialize(
   ID3DBlob*
   pixelShaderBlob = nullptr;
 
-  if (!Implementation::CompileShader(
-    L"shaders\\Cube.hlsl",
-    "VSMain",
-    "vs_5_0",
-    &vertexShaderBlob)) {
+  if (!Implementation::CompileShader(L"shaders\\Cube.hlsl", "VSMain", "vs_5_0",
+                                     &vertexShaderBlob)) {
     engine.ReleaseResources();
     return false;
   }
 
-  if (!Implementation::CompileShader(
-    L"shaders\\Cube.hlsl",
-    "PSMain",
-    "ps_5_0",
-    &pixelShaderBlob)) {
+  if (!Implementation::CompileShader(L"shaders\\Cube.hlsl", "PSMain", "ps_5_0",
+                                     &pixelShaderBlob)) {
     SafeRelease(vertexShaderBlob);
     engine.ReleaseResources();
     return false;
   }
 
-  result = engine.device.CreateVertexShader(
-    vertexShaderBlob->GetBufferPointer(),
-    vertexShaderBlob->GetBufferSize(),
-    nullptr,
-    &engine.vertexShader
-  );
+  result = engine.device.CreateVertexShader(vertexShaderBlob->GetBufferPointer(),
+                                            vertexShaderBlob->GetBufferSize(),
+                                            nullptr, &engine.vertexShader);
 
   if (FAILED(result)) {
     SafeRelease(pixelShaderBlob);
@@ -385,12 +358,9 @@ Engine::Initialize(
     return false;
   }
 
-  result = engine.device.CreatePixelShader(
-    pixelShaderBlob->GetBufferPointer(),
-    pixelShaderBlob->GetBufferSize(),
-    nullptr,
-    &engine.pixelShader
-  );
+  result = engine.device.CreatePixelShader(pixelShaderBlob->GetBufferPointer(),
+                                           pixelShaderBlob->GetBufferSize(),
+                                           nullptr, &engine.pixelShader);
 
   if (FAILED(result)) {
     SafeRelease(pixelShaderBlob);
@@ -409,13 +379,10 @@ Engine::Initialize(
   D3D11_INPUT_PER_VERTEX_DATA, 0}
   };
 
-  result = engine.device.CreateInputLayout(
-    inputElements,
-    ARRAYSIZE(inputElements),
-    vertexShaderBlob->GetBufferPointer(),
-    vertexShaderBlob->GetBufferSize(),
-    &engine.inputLayout
-  );
+  result = engine.device.CreateInputLayout(inputElements, ARRAYSIZE(inputElements),
+                                           vertexShaderBlob->GetBufferPointer(),
+                                           vertexShaderBlob->GetBufferSize(),
+                                           &engine.inputLayout);
 
   SafeRelease(pixelShaderBlob);
   SafeRelease(vertexShaderBlob);
@@ -492,7 +459,7 @@ Engine::Initialize(
   }
 
   constexpr
-    std::uint16_t indices[]{
+  std::uint16_t indices[]{
     // Frente
     0, 1, 2,
     0, 2, 3,
@@ -529,11 +496,7 @@ Engine::Initialize(
   D3D11_SUBRESOURCE_DATA indexData{};
   indexData.pSysMem = indices;
 
-  result = engine.indexBuffer.CreateBuffer(
-    engine.device,
-    indexBufferDescription,
-    &indexData
-  );
+  result = engine.indexBuffer.CreateBuffer(engine.device, indexBufferDescription, &indexData);
 
   if (FAILED(result)) {
     engine.ReleaseResources();
@@ -604,7 +567,7 @@ Engine::Render() noexcept {
   }
 
   constexpr float
-    clearColor[]{
+  clearColor[]{
       0.03f,
       0.04f,
       0.08f,
@@ -619,7 +582,7 @@ Engine::Render() noexcept {
     D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
   const auto
-    currentTime = std::chrono::steady_clock::now();
+  currentTime = std::chrono::steady_clock::now();
 
   const float elapsedSeconds = std::chrono::duration<float>
     (currentTime - engine.startTime).count();
@@ -627,40 +590,40 @@ Engine::Render() noexcept {
   using namespace DirectX;
 
   const XMMATRIX
-    world = XMMatrixRotationX(elapsedSeconds * 0.4f) *
-    XMMatrixRotationY(elapsedSeconds * 0.8f);
+  world = XMMatrixRotationX(elapsedSeconds * 0.4f) *
+  XMMatrixRotationY(elapsedSeconds * 0.8f);
 
   const XMVECTOR
-    cameraPosition = XMVectorSet(0.0f, 1.5f, -5.0f, 1.0f);
+  cameraPosition = XMVectorSet(0.0f, 1.5f, -5.0f, 1.0f);
 
   const XMVECTOR
-    cameraTarget = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+  cameraTarget = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
 
   const XMVECTOR
-    cameraUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+  cameraUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
   const XMMATRIX
-    view = XMMatrixLookAtLH(cameraPosition, cameraTarget, cameraUp);
+  view = XMMatrixLookAtLH(cameraPosition, cameraTarget, cameraUp);
 
   const float
-    aspectRatio = static_cast<float>(engine.width) /
-    static_cast<float>(engine.height);
+  aspectRatio = static_cast<float>(engine.width) /
+  static_cast<float>(engine.height);
 
   const XMMATRIX
-    projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, aspectRatio, 0.1f, 100.0f);
+  projection = XMMatrixPerspectiveFovLH(XM_PIDIV4, aspectRatio, 0.1f, 100.0f);
 
   Implementation::TransformBuffer transform{};
 
   XMStoreFloat4x4(&transform.worldViewProjection,
-    XMMatrixTranspose(world * view * projection));
+  XMMatrixTranspose(world * view * projection));
 
   engine.context.UpdateSubresource(engine.transformBuffer, 0, nullptr, &transform, 0, 0);
 
   constexpr UINT
-    stride = sizeof(Vertex);
+  stride = sizeof(Vertex);
 
   constexpr UINT
-    offset = 0;
+  offset = 0;
 
   // Extraemos el puntero nativo y lo pasamos como arreglo de 1 elemento
   ID3D11Buffer* vbs[] = { engine.vertexBuffer.getBuffer() };

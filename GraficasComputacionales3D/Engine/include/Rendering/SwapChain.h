@@ -11,7 +11,8 @@ class Texture2D;
  * para presentar la imagen renderizada en la ventana del sistema operativo
  * sin desgarro de pantalla (tearing).
  */
-class SwapChain {
+class
+SwapChain {
 public:
   /**
    * @brief Constructor por defecto.
@@ -80,8 +81,8 @@ public:
    * @return HRESULT S_OK en caso de éxito.
    */
   HRESULT GetBuffer(unsigned int Buffer,
-    REFIID riid,
-    void** ppSurface);
+                    REFIID riid,
+                    void** ppSurface);
 
   /**
    * @brief Presenta la imagen renderizada en la pantalla intercambiando los buffers.
@@ -94,7 +95,7 @@ public:
    */
   HRESULT
   Present(unsigned int SyncInterval,
-    unsigned int Flags);
+          unsigned int Flags);
 
   /**
    * @brief Redimensiona los buffers del SwapChain, útil cuando la ventana cambia de tamaño.
@@ -105,7 +106,7 @@ public:
    */
   HRESULT
   ResizeBuffers(unsigned int width,
-    unsigned int height);
+                unsigned int height);
 
 private:
   IDXGISwapChain* m_SwapChain = nullptr; ///< Puntero nativo al recurso SwapChain de DXGI.

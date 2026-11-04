@@ -26,7 +26,7 @@ Window::~Window() {
  */
 bool
 Window::Create(HINSTANCE instance, const wchar_t* title,
-  UINT clientWidth, UINT clientHeight) noexcept {
+               UINT clientWidth, UINT clientHeight) noexcept {
   if (m_handle || !instance || !title ||
     clientWidth == 0 || clientHeight == 0) {
     return false;
@@ -71,20 +71,11 @@ Window::Create(HINSTANCE instance, const wchar_t* title,
   const int outerWidth = rectangle.right - rectangle.left;
   const int outerHeight = rectangle.bottom - rectangle.top;
 
-  m_handle = CreateWindowExW(
-    0,
-    ClassName,
-    title,
-    style,
-    CW_USEDEFAULT,
-    CW_USEDEFAULT,
-    outerWidth,
-    outerHeight,
-    nullptr,
-    nullptr,
-    instance,
-    nullptr
-  );
+  m_handle = CreateWindowExW(0, ClassName, title,
+                             style, CW_USEDEFAULT,
+                             CW_USEDEFAULT, outerWidth,
+                             outerHeight, nullptr,
+                             nullptr, instance, nullptr);
 
   if (!m_handle) {
     Destroy();
