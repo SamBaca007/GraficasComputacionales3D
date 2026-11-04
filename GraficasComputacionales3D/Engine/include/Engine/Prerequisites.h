@@ -24,23 +24,25 @@
 
  // MACROS
 
+ /**
+  * @brief Macro clásica para liberar y anular una interfaz COM de DirectX.
+  * @param x Puntero a la interfaz COM.
+  */
+#define SAFE_RELEASE(x) if(x != nullptr) { x->Release(); x = nullptr; }
+
   /**
-   * @brief Macro clásica para liberar y anular una interfaz COM de DirectX.
-   * @param x Puntero a la interfaz COM.
+   * @brief Macro de registro para notificar la creación de recursos en la salida de depuración de Visual Studio.
    */
-#define SAFE_RELEASE(x) if(x != nullptr) x->Release(); x = nullptr;
-   /**
-    * @brief Macro de registro para notificar la creación de recursos en la salida de depuración de Visual Studio.
-    */
 #define MESSAGE( classObj, method, state )   \
 {                                             \
    std::wostringstream os_;                  \
    os_ << classObj << "::" << method << " : " << "[CREATION OF RESOURCE " << ": " << state << "] \n"; \
    OutputDebugStringW( os_.str().c_str() );  \
 }
-    /**
-     * @brief Macro para registrar mensajes de error en la ventana de depuración de Win32.
-     */
+
+   /**
+    * @brief Macro para registrar mensajes de error en la ventana de depuración de Win32.
+    */
 #define ERROR(classObj, method, errorMSG)                     \
 {                                                             \
     try {                                                     \
@@ -53,18 +55,31 @@
     }                                                         \
 }
 
-enum
-ExtensionType {
-  DDS = 0,
-  PNG = 1,
-  JPG = 2
+    /**
+     * @enum ExtensionType
+     * @brief Enumeración que define los tipos de extensión de imagen soportados por el motor.
+     */
+enum ExtensionType {
+  DDS = 0, ///< Formato DirectDraw Surface, ideal para texturas comprimidas en DirectX.
+  PNG = 1, ///< Formato Portable Network Graphics, sin pérdida y con soporte de transparencia.
+  JPG = 2  ///< Formato Joint Photographic Experts Group, ideal para imágenes con pérdida.
 };
-     /**
-      * @brief Helper genérico para liberar de forma segura punteros de interfaz COM de DirectX.
-      *
-      * @tparam T Tipo del objeto COM que implementa IUnknown.
-      * @param object Referencia al puntero del objeto a liberar.
-      */
+
+/**
+ * @struct Vertex
+ * @brief Representación en memoria de la estructura básica de un vértice.
+ */
+struct Vertex {
+  float position[3]; /**< Posición 3D (X, Y, Z). */
+  float color[4];    /**< Color RGBA. */
+};
+
+/**
+ * @brief Helper genérico para liberar de forma segura punteros de interfaz COM de DirectX.
+ *
+ * @tparam T Tipo del objeto COM que implementa IUnknown.
+ * @param object Referencia al puntero del objeto a liberar. Al finalizar, el puntero se asigna a nullptr.
+ */
 template<typename T>
 void
 SafeRelease(T*& object) noexcept {
@@ -75,8 +90,7 @@ SafeRelease(T*& object) noexcept {
   }
 }
 
-extern
-"C" {
+extern "C" {
   /**
    * @brief Inicializa el motor gráfico y todos sus subsistemas.
    *
@@ -86,7 +100,8 @@ extern
    * @return true si la inicialización fue exitosa, false en caso de error.
    */
   ENGINE_API bool
-    Engine_Initialize(HWND hand, int width, int height) noexcept;
+  Engine_Initialize(HWND hand, int width, int height) noexcept;
+
   /**
    * @brief Actualiza la lógica interna y el estado del motor.
    *
@@ -94,7 +109,8 @@ extern
    * (frame), previo a la fase de renderizado.
    */
   ENGINE_API void
-    Engine_Update() noexcept;
+  Engine_Update() noexcept;
+
   /**
    * @brief Ejecuta el pipeline gráfico y renderiza el frame actual.
    *
@@ -102,7 +118,8 @@ extern
    * durante la inicialización.
    */
   ENGINE_API void
-    Engine_Render() noexcept;
+  Engine_Render() noexcept;
+
   /**
    * @brief Libera los recursos y apaga el motor de forma segura.
    *
@@ -111,5 +128,5 @@ extern
    * correctamente.
    */
   ENGINE_API void
-    Engine_Shutdown() noexcept;
+  Engine_Shutdown() noexcept;
 }

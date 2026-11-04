@@ -8,28 +8,20 @@
 #include <Rendering/DeviceContext.h>
 #include <Rendering/SwapChain.h>
 #include <Rendering/Texture2D.h>
+#include <Rendering/Buffer.h>
 
-/**
- * @struct Engine::Implementation
- * @brief Estructura privada de implementación que encapsula todos los recursos e interfaces de Direct3D 11.
- */
+ /**
+  * @struct Engine::Implementation
+  * @brief Estructura privada de implementación que encapsula todos los recursos e interfaces de Direct3D 11.
+  */
 struct
 Engine::Implementation {
-  /**
-   * @struct Vertex
-   * @brief Representación en memoria de la estructura de un vértice.
-   */
-  struct
-  Vertex {
-    float position[3]; /**< Posición 3D (X, Y, Z). */
-    float color[4];    /**< Color RGBA. */
-  };
   /**
    * @struct TransformBuffer
    * @brief Estructura alineada a 16 bytes para pasar matrices de transformación al CBuffer de la GPU.
    */
   struct alignas(16)
-  TransformBuffer {
+    TransformBuffer {
     DirectX::XMFLOAT4X4 worldViewProjection; /**< Matriz combinada WVP. */
   };
 
@@ -38,19 +30,28 @@ Engine::Implementation {
   std::uint32_t width = 0;  /**< Ancho del área cliente. */
   std::uint32_t height = 0; /**< Alto del área cliente. */
 
-  Device device;
-  // ID3D11Device* device = nullptr;                  /**< Dispositivo DirectX 11 para crear recursos. */
-  DeviceContext context;
-  // ID3D11DeviceContext* context = nullptr;             /**< Contexto de comandos de dibujado en la GPU. */
-  SwapChain swapChain;
-  // IDXGISwapChain* swapChain = nullptr;                /**< Cadena de intercambio para el doble búfer. */
+  Device device; /**< Dispositivo DirectX 11 para crear recursos. */
+  // ID3D11Device* device = nullptr;                  
+
+  DeviceContext context; /**< Contexto de comandos de dibujado en la GPU. */
+  // ID3D11DeviceContext* context = nullptr;             
+
+  SwapChain swapChain; /**< Cadena de intercambio para el doble búfer. */
+  // IDXGISwapChain* swapChain = nullptr;                
+
   ID3D11RenderTargetView* renderTarget = nullptr;     /**< Vista del búfer de color principal. */
-  Texture2D depthStencilBuffer;
-  // ID3D11Texture2D* depthStencilBuffer = nullptr;      /**< Textura para el búfer de profundidad. */
+
+  Texture2D depthStencilBuffer; /**< Textura para el búfer de profundidad. */
+  // ID3D11Texture2D* depthStencilBuffer = nullptr;      
+
   ID3D11DepthStencilView* depthStencilView = nullptr;  /**< Vista del búfer de profundidad y stencil. */
 
-  ID3D11Buffer* vertexBuffer = nullptr;    /**< Búfer de vértices del cubo en VRAM. */
-  ID3D11Buffer* indexBuffer = nullptr;     /**< Búfer de índices del cubo en VRAM. */
+  Buffer vertexBuffer; /**< Búfer de vértices del cubo en VRAM. */
+  // ID3D11Buffer* vertexBuffer = nullptr;    
+
+  Buffer indexBuffer; /**< Búfer de índices del cubo en VRAM. */
+  // ID3D11Buffer* indexBuffer = nullptr;     
+
   ID3D11Buffer* transformBuffer = nullptr; /**< Búfer constante de transformaciones (WVP). */
 
   ID3D11RasterizerState* rasterizerState = nullptr; /**< Configuración del modo de rasterizado. */
@@ -93,16 +94,16 @@ Engine::Implementation {
 
     const HRESULT
       result = D3DCompileFromFile(
-      filename,
-      nullptr,
-      D3D_COMPILE_STANDARD_FILE_INCLUDE,
-      entryPoint,
-      shaderModel,
-      compileFlags,
-      0,
-      shaderBlob,
-      &errors
-    );
+        filename,
+        nullptr,
+        D3D_COMPILE_STANDARD_FILE_INCLUDE,
+        entryPoint,
+        shaderModel,
+        compileFlags,
+        0,
+        shaderBlob,
+        &errors
+      );
 
     if (errors) {
       OutputDebugStringA(
@@ -134,8 +135,10 @@ Engine::Implementation {
 
     SafeRelease(rasterizerState);
     SafeRelease(transformBuffer);
-    SafeRelease(indexBuffer);
-    SafeRelease(vertexBuffer);
+    indexBuffer.destroy();
+    // SafeRelease(indexBuffer);
+    vertexBuffer.destroy();
+    // SafeRelease(vertexBuffer);
 
     SafeRelease(inputLayout);
     SafeRelease(pixelShader);
@@ -159,6 +162,7 @@ Engine::Implementation {
   }
 
 };
+
 /**
  * @brief Constructor. Instancia la estructura oculta de implementación con no-throw.
  */
@@ -167,6 +171,7 @@ Engine::Engine() noexcept
     new (std::nothrow) Implementation{}
   ) {
 }
+
 /**
  * @brief Destructor. Destruye la implementación e invoca la limpieza general.
  */
@@ -176,8 +181,18 @@ Engine::~Engine() noexcept {
   delete m_implementation;
   m_implementation = nullptr;
 }
+
 /**
  * @brief Prepara el entorno gráfico DirectX 11, crea el Swap Chain, shaders, layout y búferes 3D.
+ *
+ * Configura los objetos fundamentales como el backbuffer, el depth/stencil buffer, compila
+ * los shaders e inicializa el modelo base (un cubo colorido rotando) cargando sus vértices
+ * e índices en memoria gráfica.
+ *
+ * @param nativeWindow Puntero a la ventana nativa del sistema operativo (HWND en Windows).
+ * @param width Ancho del área de cliente en píxeles.
+ * @param height Alto del área de cliente en píxeles.
+ * @return true si todo el entorno se inicializó correctamente; false si ocurrió algún error de creación.
  */
 bool
 Engine::Initialize(
@@ -216,7 +231,7 @@ Engine::Initialize(
   swapChainDescription.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
   constexpr D3D_FEATURE_LEVEL
-    featureLevels[] {
+    featureLevels[]{
     D3D_FEATURE_LEVEL_11_0
   };
 
@@ -271,7 +286,7 @@ Engine::Initialize(
   ID3D11Texture2D* backBuffer = nullptr;
 
   result = engine.swapChain.GetBuffer(0, __uuidof(ID3D11Texture2D),
-                                      reinterpret_cast<void**>(&backBuffer));
+    reinterpret_cast<void**>(&backBuffer));
 
   if (FAILED(result)) {
     engine.ReleaseResources();
@@ -279,7 +294,7 @@ Engine::Initialize(
   }
 
   result = engine.device.CreateRenderTargetView(backBuffer,
-                                                nullptr, &engine.renderTarget);
+    nullptr, &engine.renderTarget);
 
   SafeRelease(backBuffer);
 
@@ -313,7 +328,7 @@ Engine::Initialize(
   }
 
   D3D11_VIEWPORT
-    viewport{};
+  viewport{};
 
   viewport.TopLeftX = 0.0f;
   viewport.TopLeftY = 0.0f;
@@ -333,9 +348,9 @@ Engine::Initialize(
   );
 
   ID3DBlob*
-    vertexShaderBlob = nullptr;
+  vertexShaderBlob = nullptr;
   ID3DBlob*
-    pixelShaderBlob = nullptr;
+  pixelShaderBlob = nullptr;
 
   if (!Implementation::CompileShader(
     L"shaders\\Cube.hlsl",
@@ -385,12 +400,12 @@ Engine::Initialize(
   }
 
   constexpr D3D11_INPUT_ELEMENT_DESC
-    inputElements[]{
+  inputElements[]{
     {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,
-    static_cast<UINT>(offsetof(Implementation::Vertex, position)),
+    static_cast<UINT>(offsetof(Vertex, position)),
     D3D11_INPUT_PER_VERTEX_DATA, 0},
   {"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0,
-  static_cast<UINT>(offsetof(Implementation::Vertex, color)),
+  static_cast<UINT>(offsetof(Vertex, color)),
   D3D11_INPUT_PER_VERTEX_DATA, 0}
   };
 
@@ -411,7 +426,7 @@ Engine::Initialize(
   }
 
   constexpr
-  Implementation::Vertex vertices[] {
+    Vertex vertices[]{
     // Frente
     {
         { -1.0f,  1.0f, -1.0f },
@@ -465,10 +480,10 @@ Engine::Initialize(
   D3D11_SUBRESOURCE_DATA initialVertexData{};
   initialVertexData.pSysMem = vertices;
 
-  result = engine.device.CreateBuffer(
-    &vertexBufferDescription,
-    &initialVertexData,
-    &engine.vertexBuffer
+  result = engine.vertexBuffer.CreateBuffer(
+    engine.device,
+    vertexBufferDescription,
+    &initialVertexData
   );
 
   if (FAILED(result)) {
@@ -477,7 +492,7 @@ Engine::Initialize(
   }
 
   constexpr
-  std::uint16_t indices[] {
+    std::uint16_t indices[]{
     // Frente
     0, 1, 2,
     0, 2, 3,
@@ -514,8 +529,11 @@ Engine::Initialize(
   D3D11_SUBRESOURCE_DATA indexData{};
   indexData.pSysMem = indices;
 
-  result = engine.device.CreateBuffer(&indexBufferDescription, &indexData,
-    &engine.indexBuffer);
+  result = engine.indexBuffer.CreateBuffer(
+    engine.device,
+    indexBufferDescription,
+    &indexData
+  );
 
   if (FAILED(result)) {
     engine.ReleaseResources();
@@ -558,6 +576,7 @@ Engine::Initialize(
 
   return true;
 }
+
 /**
  * @brief Ejecuta el ciclo de renderizado de la GPU para el cuadro actual.
  *
@@ -576,7 +595,7 @@ Engine::Render() noexcept {
     !engine.swapChain.getSwapChainAdress() ||
     !engine.renderTarget ||
     !engine.depthStencilView ||
-    !engine.vertexBuffer ||
+    !engine.vertexBuffer.getBuffer() ||
     !engine.transformBuffer ||
     !engine.inputLayout ||
     !engine.vertexShader ||
@@ -584,12 +603,12 @@ Engine::Render() noexcept {
     return;
   }
 
-  constexpr float 
-  clearColor[] {
-    0.03f,
-    0.04f,
-    0.08f,
-    1.0f
+  constexpr float
+    clearColor[]{
+      0.03f,
+      0.04f,
+      0.08f,
+      1.0f
   };
 
   engine.context.OMSetRenderTargets(1, &engine.renderTarget, engine.depthStencilView);
@@ -638,14 +657,16 @@ Engine::Render() noexcept {
   engine.context.UpdateSubresource(engine.transformBuffer, 0, nullptr, &transform, 0, 0);
 
   constexpr UINT
-    stride = sizeof(Implementation::Vertex);
+    stride = sizeof(Vertex);
 
   constexpr UINT
     offset = 0;
 
-  engine.context.IASetVertexBuffers(0, 1, &engine.vertexBuffer, &stride, &offset);
+  // Extraemos el puntero nativo y lo pasamos como arreglo de 1 elemento
+  ID3D11Buffer* vbs[] = { engine.vertexBuffer.getBuffer() };
+  engine.context.IASetVertexBuffers(0, 1, vbs, &stride, &offset);
 
-  engine.context.IASetIndexBuffer(engine.indexBuffer, DXGI_FORMAT_R16_UINT, 0);
+  engine.context.IASetIndexBuffer(engine.indexBuffer.getBuffer(), DXGI_FORMAT_R16_UINT, 0);
 
   engine.context.IASetInputLayout(engine.inputLayout);
 
@@ -663,6 +684,7 @@ Engine::Render() noexcept {
 
   engine.swapChain.Present(1, 0);
 }
+
 /**
  * @brief Apaga la instancia y delega la destrucción de los recursos de DirectX al método Pimpl.
  */
