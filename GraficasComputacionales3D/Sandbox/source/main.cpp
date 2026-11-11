@@ -41,12 +41,8 @@ wWinMain(HINSTANCE instance, HINSTANCE previousInstance, PWSTR commandLine,
 
   // 1. Inicializar el subsistema de la ventana
   if (!window.Create(instance, L"Surreal Engine 3D", CLIENT_WIDTH, CLIENT_HEIGHT)) {
-    MessageBoxW(
-      nullptr,
-      L"No se pudo crear la ventana.",
-      L"Window Error",
-      MB_OK | MB_ICONERROR
-    );
+    MessageBoxW(nullptr, L"No se pudo crear la ventana.", L"Window Error",
+      MB_OK | MB_ICONERROR);
     return 1;
   }
 
@@ -54,15 +50,10 @@ wWinMain(HINSTANCE instance, HINSTANCE previousInstance, PWSTR commandLine,
 
   // 2. Inicializar el motor gráfico y sus recursos de DirectX
   if (!engine.Initialize(window.GetHandle(), CLIENT_WIDTH, CLIENT_HEIGHT)) {
-    MessageBoxW(
-      window.GetHandle(),
-      L"No se pudo inicializar el Engine.\n\n"
-      L"Verifica que exista:\n"
-      L"shaders\\Cube.hlsl\n\n"
-      L"Revisa también la ventana Output.",
-      L"Engine Error",
-      MB_OK | MB_ICONERROR
-    );
+    MessageBoxW(window.GetHandle(), L"No se pudo inicializar el Engine.\n\n"
+      L"Verifica que exista:\n" L"shaders\\Cube.hlsl\n\n"
+      L"Revisa también la ventana Output.", L"Engine Error",
+      MB_OK | MB_ICONERROR);
 
     return 1;
   }
