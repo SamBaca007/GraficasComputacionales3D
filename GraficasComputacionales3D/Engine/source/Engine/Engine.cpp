@@ -9,6 +9,9 @@
 #include <Rendering/SwapChain.h>
 #include <Rendering/Texture2D.h>
 #include <Rendering/Buffer.h>
+#include <Rendering/RenderTargetView.h>
+#include <Rendering/DepthStencilView.h>
+#include <Rendering/RasterizerState.h>
 
  /**
   * @struct Engine::Implementation
@@ -39,12 +42,14 @@ Engine::Implementation {
   SwapChain swapChain; /**< Cadena de intercambio para el doble búfer. */
   // IDXGISwapChain* swapChain = nullptr;                
 
-  ID3D11RenderTargetView* renderTarget = nullptr;     /**< Vista del búfer de color principal. */
+  RenderTargetView renderTarget;
+  // ID3D11RenderTargetView* renderTarget = nullptr;     /**< Vista del búfer de color principal. */
 
   Texture2D depthStencilBuffer; /**< Textura para el búfer de profundidad. */
   // ID3D11Texture2D* depthStencilBuffer = nullptr;      
 
-  ID3D11DepthStencilView* depthStencilView = nullptr;  /**< Vista del búfer de profundidad y stencil. */
+  DepthStencilView depthStencilView;
+  // ID3D11DepthStencilView* depthStencilView = nullptr;  /**< Vista del búfer de profundidad y stencil. */
 
   Buffer vertexBuffer; /**< Búfer de vértices del cubo en VRAM. */
   // ID3D11Buffer* vertexBuffer = nullptr;    
@@ -54,7 +59,8 @@ Engine::Implementation {
 
   ID3D11Buffer* transformBuffer = nullptr; /**< Búfer constante de transformaciones (WVP). */
 
-  ID3D11RasterizerState* rasterizerState = nullptr; /**< Configuración del modo de rasterizado. */
+  RasterizerState rasterizerState;
+  // ID3D11RasterizerState* rasterizerState = nullptr; /**< Configuración del modo de rasterizado. */
 
   std::chrono::steady_clock::time_point startTime{}; /**< Marca de tiempo inicial para calcular la rotación en animación. */
 
@@ -133,7 +139,8 @@ Engine::Implementation {
       // context->Flush();
     // }
 
-    SafeRelease(rasterizerState);
+    rasterizerState.destroy();
+    // SafeRelease(rasterizerState);
     SafeRelease(transformBuffer);
     indexBuffer.destroy();
     // SafeRelease(indexBuffer);
@@ -144,10 +151,12 @@ Engine::Implementation {
     SafeRelease(pixelShader);
     SafeRelease(vertexShader);
 
-    SafeRelease(depthStencilView);
+    depthStencilView.destroy();
+    // SafeRelease(depthStencilView);
     depthStencilBuffer.destroy();
     // SafeRelease(depthStencilBuffer);
-    SafeRelease(renderTarget);
+    renderTarget.destroy();
+    // SafeRelease(renderTarget);
 
     swapChain.destroy();
     // SafeRelease(swapChain);
@@ -282,8 +291,7 @@ Engine::Initialize(void* nativeWindow, std::uint32_t width, std::uint32_t height
     return false;
   }
 
-  result = engine.device.CreateRenderTargetView(backBuffer,
-    nullptr, &engine.renderTarget);
+  result = engine.renderTarget.init(engine.device, backBuffer, nullptr);
 
   SafeRelease(backBuffer);
 
@@ -301,8 +309,8 @@ Engine::Initialize(void* nativeWindow, std::uint32_t width, std::uint32_t height
     return false;
   }
 
-  result = engine.device.CreateDepthStencilView(engine.depthStencilBuffer.getTexture(),
-                                                nullptr, &engine.depthStencilView);
+  result = engine.depthStencilView.init(engine.device,
+    engine.depthStencilBuffer.getTexture(), nullptr);
 
   if (FAILED(result)) {
     engine.ReleaseResources();
@@ -527,8 +535,7 @@ Engine::Initialize(void* nativeWindow, std::uint32_t width, std::uint32_t height
 
   rasterizerDescription.DepthClipEnable = TRUE;
 
-  result = engine.device.CreateRasterizerState(&rasterizerDescription,
-    &engine.rasterizerState);
+  result = engine.rasterizerState.init(engine.device, &rasterizerDescription);
 
   if (FAILED(result)) {
     engine.ReleaseResources();
@@ -556,8 +563,8 @@ Engine::Render() noexcept {
 
   if (!engine.context.getDeviceContextAdress() ||
     !engine.swapChain.getSwapChainAdress() ||
-    !engine.renderTarget ||
-    !engine.depthStencilView ||
+    !engine.renderTarget.getRTV() ||
+    !engine.depthStencilView.getDSV() ||
     !engine.vertexBuffer.getBuffer() ||
     !engine.transformBuffer ||
     !engine.inputLayout ||
@@ -574,11 +581,12 @@ Engine::Render() noexcept {
       1.0f
   };
 
-  engine.context.OMSetRenderTargets(1, &engine.renderTarget, engine.depthStencilView);
+  ID3D11RenderTargetView* rtv = engine.renderTarget.getRTV();
+  engine.context.OMSetRenderTargets(1, &rtv, engine.depthStencilView.getDSV());
 
-  engine.context.ClearRenderTargetView(engine.renderTarget, clearColor);
+  engine.context.ClearRenderTargetView(engine.renderTarget.getRTV(), clearColor);
 
-  engine.context.ClearDepthStencilView(engine.depthStencilView,
+  engine.context.ClearDepthStencilView(engine.depthStencilView.getDSV(),
     D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
   const auto
@@ -635,7 +643,7 @@ Engine::Render() noexcept {
 
   engine.context.IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-  engine.context.RSSetState(engine.rasterizerState);
+  engine.context.RSSetState(engine.rasterizerState.getState());
 
   engine.context.VSSetShader(engine.vertexShader, nullptr, 0);
 
