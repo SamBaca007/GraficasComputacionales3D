@@ -291,7 +291,7 @@ Engine::Initialize(void* nativeWindow, std::uint32_t width, std::uint32_t height
     return false;
   }
 
-  result = engine.renderTarget.init(engine.device, backBuffer, nullptr);
+  result = engine.renderTarget.init(engine.device, backBuffer, DXGI_FORMAT_UNKNOWN);
 
   SafeRelease(backBuffer);
 
@@ -309,8 +309,8 @@ Engine::Initialize(void* nativeWindow, std::uint32_t width, std::uint32_t height
     return false;
   }
 
-  result = engine.depthStencilView.init(engine.device,
-    engine.depthStencilBuffer.getTexture(), nullptr);
+  result = engine.depthStencilView.init(engine.device, engine.depthStencilBuffer,
+    DXGI_FORMAT_UNKNOWN);
 
   if (FAILED(result)) {
     engine.ReleaseResources();
@@ -563,8 +563,8 @@ Engine::Render() noexcept {
 
   if (!engine.context.getDeviceContextAdress() ||
     !engine.swapChain.getSwapChainAdress() ||
-    !engine.renderTarget.getRTV() ||
-    !engine.depthStencilView.getDSV() ||
+    !engine.renderTarget.getRenderTargetView() ||
+    !engine.depthStencilView.getDepthStencilView() ||
     !engine.vertexBuffer.getBuffer() ||
     !engine.transformBuffer ||
     !engine.inputLayout ||
@@ -581,12 +581,12 @@ Engine::Render() noexcept {
       1.0f
   };
 
-  ID3D11RenderTargetView* rtv = engine.renderTarget.getRTV();
-  engine.context.OMSetRenderTargets(1, &rtv, engine.depthStencilView.getDSV());
+  ID3D11RenderTargetView* rtv = engine.renderTarget.getRenderTargetView();
+  engine.context.OMSetRenderTargets(1, &rtv, engine.depthStencilView.getDepthStencilView());
 
-  engine.context.ClearRenderTargetView(engine.renderTarget.getRTV(), clearColor);
+  engine.context.ClearRenderTargetView(engine.renderTarget.getRenderTargetView(), clearColor);
 
-  engine.context.ClearDepthStencilView(engine.depthStencilView.getDSV(),
+  engine.context.ClearDepthStencilView(engine.depthStencilView.getDepthStencilView(),
     D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
   const auto
