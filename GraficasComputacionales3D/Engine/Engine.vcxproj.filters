@@ -92,6 +92,12 @@
     <ClInclude Include="source\Rendering\RasterizerState.h">
       <Filter>Archivos de encabezado\Rendering</Filter>
     </ClInclude>
+    <ClInclude Include="include\Rendering\ShaderProgram.h">
+      <Filter>Archivos de encabezado\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Rendering\InputLayout.h">
+      <Filter>Archivos de encabezado\Rendering</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Shaders\Cube.hlsl">

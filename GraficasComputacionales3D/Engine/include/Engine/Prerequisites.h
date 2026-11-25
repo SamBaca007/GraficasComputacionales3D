@@ -76,6 +76,12 @@ Vertex {
   float color[4];    /**< Color RGBA. */
 };
 
+enum
+ShaderType {
+  VERTEX_SHADER = 0,
+  PIXEL_SHADER = 1
+};
+
 /**
  * @brief Helper genérico para liberar de forma segura punteros de interfaz COM de DirectX.
  *

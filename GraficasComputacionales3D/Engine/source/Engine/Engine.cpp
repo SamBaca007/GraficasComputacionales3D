@@ -535,7 +535,8 @@ Engine::Initialize(void* nativeWindow, std::uint32_t width, std::uint32_t height
 
   rasterizerDescription.DepthClipEnable = TRUE;
 
-  result = engine.rasterizerState.init(engine.device, &rasterizerDescription);
+  result = engine.rasterizerState.init(engine.device, D3D11_FILL_SOLID, D3D11_CULL_NONE,
+    false, true);
 
   if (FAILED(result)) {
     engine.ReleaseResources();
@@ -643,7 +644,7 @@ Engine::Render() noexcept {
 
   engine.context.IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-  engine.context.RSSetState(engine.rasterizerState.getState());
+  engine.rasterizerState.render(engine.context);
 
   engine.context.VSSetShader(engine.vertexShader, nullptr, 0);
 
